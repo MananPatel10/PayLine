@@ -1,0 +1,1815 @@
+{% extends "base.html" %}
+
+{% block title %}Payline | Micro-Investment &amp; Automated Wealth Engine{% endblock %}
+
+{% block head %}
+<style>
+    @keyframes floatIn {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: scale(0.97) translateY(10px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* ─── Top 4 Popular Asset Cards (Inspired by Portify) ─── */
+    .asset-grid-top {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+    @media (max-width: 1080px) {
+        .asset-grid-top { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+        .asset-grid-top { grid-template-columns: 1fr; }
+    }
+
+    .asset-card {
+        background: #ffffff;
+        border: 1px solid #edf2f7;
+        border-radius: var(--radius-card);
+        padding: 1.25rem 1.35rem 1.15rem;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s, border-color 0.2s;
+        cursor: pointer;
+    }
+    .asset-card:hover {
+        transform: translateY(-2px);
+        border-color: #cbd5e1;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+    }
+    .asset-header-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.85rem;
+    }
+    .asset-icon-box {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.8rem;
+        font-family: var(--font-display);
+        flex-shrink: 0;
+    }
+    .asset-icon-blue { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .asset-icon-amber { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+    .asset-icon-purple { background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+    .asset-icon-green { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+
+    .asset-sparkline-wrap {
+        width: 100%;
+        height: 48px;
+        margin: 0.5rem 0;
+    }
+    .asset-sparkline-wrap svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+    }
+
+    .asset-footer-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-top: 0.35rem;
+    }
+
+    /* ─── Metric Row (4 Middle Metrics) ─── */
+    .metric-grid-mid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.25rem;
+        margin-bottom: 1.75rem;
+    }
+    @media (max-width: 1080px) {
+        .metric-grid-mid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+        .metric-grid-mid { grid-template-columns: 1fr; }
+    }
+
+    .metric-box {
+        background: #ffffff;
+        border: 1px solid #edf2f7;
+        border-radius: var(--radius-card);
+        padding: 1.35rem;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .metric-box:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.05);
+    }
+    .metric-title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.4rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .metric-value {
+        font-size: 1.85rem;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.03em;
+        font-family: var(--font-display);
+        line-height: 1.15;
+    }
+    .metric-sub {
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    /* ─── Two-Column Main Layout ─── */
+    .port-two-col {
+        display: grid;
+        grid-template-columns: 1.85fr 1.15fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    @media (max-width: 1024px) {
+        .port-two-col { grid-template-columns: 1fr; }
+    }
+
+    /* Standard Clean White Card */
+    .white-card {
+        background: #ffffff;
+        border: 1px solid #edf2f7;
+        border-radius: var(--radius-card);
+        padding: 1.6rem 1.65rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        margin-bottom: 1.5rem;
+        color: #0f172a;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .white-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    }
+    .white-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+    }
+
+    /* Timeframe Selector Pills */
+    .timeframe-group {
+        display: inline-flex;
+        background: #f1f5f9;
+        padding: 3px;
+        border-radius: 9999px;
+        gap: 2px;
+    }
+    .timeframe-pill {
+        padding: 0.3rem 0.75rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        border-radius: 9999px;
+        border: none;
+        background: transparent;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        font-family: var(--font-display);
+    }
+    .timeframe-pill.active {
+        background: #0f172a;
+        color: #ffffff;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+
+    /* Spline Big Chart */
+    .portfolio-spline-wrap {
+        width: 100%;
+        height: 200px;
+        position: relative;
+        margin: 1.25rem 0 0.5rem;
+    }
+    .portfolio-spline-wrap svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+    }
+    .chart-month-axis {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0.5rem 0;
+        font-size: 0.7rem;
+        color: #94a3b8;
+        font-family: var(--font-mono);
+    }
+
+    /* Asset Allocation Segmented Bar */
+    .allocation-bar-track {
+        height: 10px;
+        border-radius: 9999px;
+        background: #f1f5f9;
+        display: flex;
+        overflow: hidden;
+        margin: 1rem 0 1.25rem;
+        gap: 2px;
+    }
+    .alloc-seg {
+        height: 100%;
+        transition: width 0.6s ease;
+    }
+    .alloc-seg-blue { background: #60a5fa; }
+    .alloc-seg-amber { background: #f59e0b; }
+    .alloc-seg-green { background: #10b981; }
+    .alloc-seg-purple { background: #a855f7; }
+
+    .alloc-legend-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid #f8fafc;
+    }
+    .alloc-legend-row:last-child { border-bottom: none; }
+    .alloc-dot-label {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #334155;
+    }
+    .alloc-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    /* Sweep Station Rule Selector */
+    .sweep-rules-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.85rem;
+        margin: 1rem 0 1.25rem;
+    }
+    .rule-tile {
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem 0.85rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .rule-tile:hover {
+        border-color: #cbd5e1;
+        transform: translateY(-2px);
+        background: #ffffff;
+    }
+    .rule-tile.active {
+        border-color: #0f172a;
+        background: #ffffff;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+    }
+    .rule-tile.active .rule-tile-val {
+        color: #0f172a;
+    }
+
+    /* Multiplier Buttons */
+    .mult-btn-group {
+        display: inline-flex;
+        gap: 0.45rem;
+    }
+    .mult-btn {
+        padding: 0.3rem 0.75rem;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: #475569;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: var(--font-display);
+    }
+    .mult-btn:hover { border-color: #0f172a; color: #0f172a; }
+    .mult-btn.active {
+        background: #0f172a;
+        color: #ffffff;
+        border-color: #0f172a;
+    }
+
+    /* Recent Action Feed Items */
+    .action-feed-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid #f1f5f9;
+        transition: background-color 0.15s;
+    }
+    .action-feed-item:last-child { border-bottom: none; }
+    .action-feed-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .action-type-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.2rem 0.55rem;
+        border-radius: 6px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .action-pill-buy { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+    .action-pill-sweep { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .action-pill-sell { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+    /* Tables */
+    .clean-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.84rem;
+    }
+    .clean-table th {
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.75rem 0.95rem;
+        border-bottom: 1px solid #e2e8f0;
+        text-align: left;
+    }
+    .clean-table td {
+        padding: 0.8rem 0.95rem;
+        border-bottom: 1px solid #f1f5f9;
+        color: #1e293b;
+    }
+    .clean-table tr:hover td { background: #f8fafc; }
+
+    /* Payment Modal (White, Professional) */
+    .modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+        padding: 1rem;
+        box-sizing: border-box;
+    }
+    .epic-modal-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        max-width: 820px;
+        width: 100%;
+        color: #0f172a;
+        box-shadow: 0 25px 70px rgba(0,0,0,0.18);
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        max-height: 88vh;
+        animation: modalFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @media (max-width: 768px) {
+        .epic-modal-box { grid-template-columns: 1fr; }
+    }
+    .epic-left-col {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-right: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .epic-right-col {
+        background: #ffffff;
+        padding: 1.5rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .epic-method-card {
+        background: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.6rem;
+        transition: all 0.15s;
+    }
+    .epic-method-card:hover { border-color: #cbd5e1; }
+    .epic-method-card.active {
+        border-color: #0f172a;
+        background: #f8fafc;
+    }
+    .epic-radio-dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid #cbd5e1;
+        position: relative;
+    }
+    .epic-radio-dot.checked {
+        border-color: #0f172a;
+        background: #0f172a;
+    }
+    .epic-pay-btn {
+        width: 100%;
+        padding: 0.85rem;
+        background: #0f172a;
+        color: #ffffff;
+        font-family: var(--font-display);
+        font-size: 0.95rem;
+        font-weight: 800;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15);
+    }
+    .epic-pay-btn:hover {
+        background: #1e293b;
+        transform: translateY(-1px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.75rem; animation: floatIn 0.3s ease both;">
+    <div>
+        <div class="page-tag" style="color: #6366f1; font-weight: 800; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.08em; margin-bottom: 0.25rem;">
+            Algorithmic WealthTech | Execution Suite
+        </div>
+        <h1 class="page-title" style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.04em; color: #0f172a; margin-bottom: 0.35rem;">
+            Micro-Investing &amp; Portfolio Hub
+        </h1>
+        <p class="page-desc" style="font-size: 0.9rem; color: #64748b; line-height: 1.5;">
+            Automated transaction round-ups, live UPI 2.0 checkout, Demat custodial holdings, and Parametric VaR liquidity buffers.
+        </p>
+    </div>
+    <div style="display: flex; gap: 0.65rem; align-items: center; flex-wrap: wrap;">
+        <button type="button" onclick="openPaymentGateway()" class="btn btn-lime" style="font-size: 0.82rem; padding: 0.52rem 1.15rem; background: #d4f938; color: #0f172a; font-weight: 800; border: none; cursor: pointer;">
+            + Deposit Now
+        </button>
+        <a href="/dashboard" class="btn btn-outline" style="font-size: 0.82rem; padding: 0.52rem 1rem;">
+            Analytics
+        </a>
+        <a href="/tax" class="btn btn-outline" style="font-size: 0.82rem; padding: 0.52rem 1rem;">
+            Tax Suite
+        </a>
+        <a href="/advisor" class="btn btn-outline" style="font-size: 0.82rem; padding: 0.52rem 1rem;">
+            AI Advisor
+        </a>
+    </div>
+</div>
+
+<!-- TOP SECTION: MOST POPULAR THIS WEEK / TOP PORTFOLIO ASSETS (Inspired by Portify) -->
+<div style="margin-bottom: 1.75rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+        <div style="font-size: 0.88rem; font-weight: 800; color: #0f172a; font-family: var(--font-display); letter-spacing: -0.01em;">
+            Top Portfolio Assets
+        </div>
+        <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">Live NAV Telemetry</span>
+    </div>
+
+    <div class="asset-grid-top">
+        <!-- Asset 1: UTI Nifty 50 Index Fund -->
+        <div class="asset-card" onclick="openPaymentGatewayWithAsset('UTI Nifty 50 Index Fund', 289.45)">
+            <div>
+                <div class="asset-header-row">
+                    <div class="asset-icon-box asset-icon-blue">N50</div>
+                    <div>
+                        <div style="font-weight: 800; font-size: 0.92rem; color: #0f172a;">Nifty 50 Index</div>
+                        <div style="font-size: 0.72rem; color: #64748b;">UTI Direct Growth</div>
+                    </div>
+                </div>
+
+                <!-- Green Spline Sparkline -->
+                <div class="asset-sparkline-wrap">
+                    <svg viewBox="0 0 160 48" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="sparkGradBlue" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#2563eb" stop-opacity="0.18"/>
+                                <stop offset="100%" stop-color="#2563eb" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M 0 38 Q 25 35, 45 28 T 85 24 T 120 14 T 160 8 L 160 48 L 0 48 Z" fill="url(#sparkGradBlue)"/>
+                        <path d="M 0 38 Q 25 35, 45 28 T 85 24 T 120 14 T 160 8" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="asset-footer-row">
+                <div class="num-mono" style="font-size: 1.15rem; font-weight: 800; color: #0f172a;">
+                    ₹289.45
+                </div>
+                <div class="num-mono" style="font-size: 0.75rem; font-weight: 700; color: #16a34a;">
+                    +2.44 (+0.85%)
+                </div>
+            </div>
+        </div>
+
+        <!-- Asset 2: Nippon India ETF Gold BeES -->
+        <div class="asset-card" onclick="openPaymentGatewayWithAsset('Nippon India Gold BeES', 69.80)">
+            <div>
+                <div class="asset-header-row">
+                    <div class="asset-icon-box asset-icon-amber">GLD</div>
+                    <div>
+                        <div style="font-weight: 800; font-size: 0.92rem; color: #0f172a;">Gold Bullion ETF</div>
+                        <div style="font-size: 0.72rem; color: #64748b;">Nippon 24K BeES</div>
+                    </div>
+                </div>
+
+                <!-- Gold Spline Sparkline -->
+                <div class="asset-sparkline-wrap">
+                    <svg viewBox="0 0 160 48" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="sparkGradAmber" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#d97706" stop-opacity="0.18"/>
+                                <stop offset="100%" stop-color="#d97706" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M 0 32 Q 30 36, 60 26 T 100 28 T 135 16 T 160 12 L 160 48 L 0 48 Z" fill="url(#sparkGradAmber)"/>
+                        <path d="M 0 32 Q 30 36, 60 26 T 100 28 T 135 16 T 160 12" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="asset-footer-row">
+                <div class="num-mono" style="font-size: 1.15rem; font-weight: 800; color: #0f172a;">
+                    ₹69.80
+                </div>
+                <div class="num-mono" style="font-size: 0.75rem; font-weight: 700; color: #16a34a;">
+                    +0.29 (+0.42%)
+                </div>
+            </div>
+        </div>
+
+        <!-- Asset 3: Mirae Asset ELSS Tax Saver -->
+        <div class="asset-card" onclick="openPaymentGatewayWithAsset('Mirae Asset ELSS Tax Saver', 122.30)">
+            <div>
+                <div class="asset-header-row">
+                    <div class="asset-icon-box asset-icon-purple">80C</div>
+                    <div>
+                        <div style="font-weight: 800; font-size: 0.92rem; color: #0f172a;">ELSS Tax Shield</div>
+                        <div style="font-size: 0.72rem; color: #64748b;">Section 80C Equity</div>
+                    </div>
+                </div>
+
+                <!-- Purple Spline Sparkline -->
+                <div class="asset-sparkline-wrap">
+                    <svg viewBox="0 0 160 48" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="sparkGradPurple" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.18"/>
+                                <stop offset="100%" stop-color="#7c3aed" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M 0 40 Q 35 42, 65 30 T 110 20 T 140 14 T 160 6 L 160 48 L 0 48 Z" fill="url(#sparkGradPurple)"/>
+                        <path d="M 0 40 Q 35 42, 65 30 T 110 20 T 140 14 T 160 6" fill="none" stroke="#7c3aed" stroke-width="2.2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="asset-footer-row">
+                <div class="num-mono" style="font-size: 1.15rem; font-weight: 800; color: #0f172a;">
+                    ₹122.30
+                </div>
+                <div class="num-mono" style="font-size: 0.75rem; font-weight: 700; color: #16a34a;">
+                    +1.35 (+1.12%)
+                </div>
+            </div>
+        </div>
+
+        <!-- Asset 4: ICICI Prudential Liquid Fund -->
+        <div class="asset-card" onclick="openPaymentGatewayWithAsset('ICICI Prudential Liquid Fund', 364.50)">
+            <div>
+                <div class="asset-header-row">
+                    <div class="asset-icon-box asset-icon-green">T-B</div>
+                    <div>
+                        <div style="font-weight: 800; font-size: 0.92rem; color: #0f172a;">Liquid Reserve ETF</div>
+                        <div style="font-size: 0.72rem; color: #64748b;">Overnight T-Bills</div>
+                    </div>
+                </div>
+
+                <!-- Green Steady Sparkline -->
+                <div class="asset-sparkline-wrap">
+                    <svg viewBox="0 0 160 48" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="sparkGradGreen" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#16a34a" stop-opacity="0.18"/>
+                                <stop offset="100%" stop-color="#16a34a" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M 0 34 Q 30 33, 65 31 T 110 27 T 140 24 T 160 22 L 160 48 L 0 48 Z" fill="url(#sparkGradGreen)"/>
+                        <path d="M 0 34 Q 30 33, 65 31 T 110 27 T 140 24 T 160 22" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="asset-footer-row">
+                <div class="num-mono" style="font-size: 1.15rem; font-weight: 800; color: #0f172a;">
+                    ₹364.50
+                </div>
+                <div class="num-mono" style="font-size: 0.75rem; font-weight: 700; color: #16a34a;">
+                    +0.07 (+0.02%)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MIDDLE METRIC ROW (Exact 4 Metrics matching Portify Layout) -->
+<div class="metric-grid-mid">
+    <!-- Metric 1: Cash Available -->
+    <div class="metric-box">
+        <div>
+            <div class="metric-title">
+                <span>Cash Available</span>
+                <span style="color: #94a3b8; font-size: 0.7rem; font-weight: 500;">Unswept</span>
+            </div>
+            <div class="metric-value num-mono" id="pending-sweep-amount">
+                ₹{{ "{:,.2f}".format(micro.roundup_totals.nearest_50 or 2402.0) }}
+            </div>
+        </div>
+        <div class="metric-sub" style="color: #0284c7;">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #0284c7;"></span>
+            <span>+₹{{ "{:,.2f}".format(micro.roundup_totals.monthly_runrate_50 or 791.87) }}/mo Run-rate</span>
+        </div>
+    </div>
+
+    <!-- Metric 2: Unrealized P&L -->
+    <div class="metric-box">
+        <div>
+            <div class="metric-title">
+                <span>Unrealized P&amp;L</span>
+                <span style="color: #94a3b8; font-size: 0.7rem; font-weight: 500;">Net Gain</span>
+            </div>
+            <div class="metric-value num-mono" style="color: #16a34a;">
+                +₹{{ "{:,.2f}".format(micro.demat_summary.total_pnl or 977.58) }}
+            </div>
+        </div>
+        <div class="metric-sub" style="color: #16a34a;">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #16a34a;"></span>
+            <span>+{{ micro.demat_summary.total_pnl_pct or 8.14 }}% All-Time Yield</span>
+        </div>
+    </div>
+
+    <!-- Metric 3: Captured Sweeps -->
+    <div class="metric-box">
+        <div>
+            <div class="metric-title">
+                <span>Captured Sweeps</span>
+                <span style="color: #94a3b8; font-size: 0.7rem; font-weight: 500;">Demat Cost</span>
+            </div>
+            <div class="metric-value num-mono" id="portfolio-deployed-display">
+                ₹{{ "{:,.2f}".format((total_swept if (total_swept is defined and total_swept and total_swept > 0) else (micro.demat_summary.total_invested if (micro.demat_summary and micro.demat_summary.total_invested is defined) else 12010.56)) or 12010.56) }}
+            </div>
+        </div>
+        <div class="metric-sub" style="color: #64748b;">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #94a3b8;"></span>
+            <span>{{ executed_sweeps|length if executed_sweeps else 12 }} Automated Batches</span>
+        </div>
+    </div>
+
+    <!-- Metric 4: Portfolio XIRR Performance -->
+    <div class="metric-box">
+        <div>
+            <div class="metric-title">
+                <span>YTD Performance</span>
+                <span style="color: #94a3b8; font-size: 0.7rem; font-weight: 500;">Annualized</span>
+            </div>
+            <div class="metric-value num-mono" style="color: #0f172a;">
+                +{{ micro.demat_summary.xirr_pct or 14.6 }}%
+            </div>
+        </div>
+        <div class="metric-sub" style="color: #16a34a;">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #16a34a;"></span>
+            <span>+2.4% vs Nifty Benchmark</span>
+        </div>
+    </div>
+</div>
+
+<!-- TWO-COLUMN MAIN BODY (Left: Spline Chart + Sweep Station + Holdings | Right: My Portfolio + Actions) -->
+<div class="port-two-col">
+    <!-- LEFT COLUMN -->
+    <div>
+        <!-- 1. Portfolio Value Over Time (Spline Wave Chart) -->
+        <div class="white-card">
+            <div class="white-card-header">
+                <div>
+                    <div style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.2rem;">
+                        Portfolio Value Over Time
+                    </div>
+                    <div class="num-mono" id="portfolio-value-display" style="font-size: 1.85rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">
+                        +₹{{ "{:,.2f}".format(micro.demat_summary.total_value or 12988.14) }}
+                    </div>
+                </div>
+                <div class="timeframe-group">
+                    <button type="button" class="timeframe-pill" onclick="setTimeframeChart(this, '1D')">1D</button>
+                    <button type="button" class="timeframe-pill" onclick="setTimeframeChart(this, '7D')">7D</button>
+                    <button type="button" class="timeframe-pill active" onclick="setTimeframeChart(this, '1M')">1M</button>
+                    <button type="button" class="timeframe-pill" onclick="setTimeframeChart(this, '1Y')">1Y</button>
+                    <button type="button" class="timeframe-pill" onclick="setTimeframeChart(this, 'All')">All</button>
+                </div>
+            </div>
+
+            <!-- Spline Chart SVG with Month Axis -->
+            <div class="portfolio-spline-wrap">
+                <svg viewBox="0 0 680 180" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="portSplineGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#16a34a" stop-opacity="0.18"/>
+                            <stop offset="100%" stop-color="#16a34a" stop-opacity="0.0"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Horizontal reference lines -->
+                    <line x1="20" y1="40" x2="660" y2="40" stroke="#f1f5f9" stroke-width="1"/>
+                    <line x1="20" y1="90" x2="660" y2="90" stroke="#f1f5f9" stroke-width="1"/>
+                    <line x1="20" y1="140" x2="660" y2="140" stroke="#f1f5f9" stroke-width="1"/>
+
+                    <!-- Gradient fill under spline -->
+                    <path d="M 20 150 C 90 145, 120 135, 170 120 C 220 105, 250 128, 300 95 C 350 62, 380 85, 430 70 C 480 55, 520 75, 570 48 C 610 26, 640 32, 660 25 L 660 170 L 20 170 Z" fill="url(#portSplineGrad)"/>
+
+                    <!-- Smooth green spline curve -->
+                    <path d="M 20 150 C 90 145, 120 135, 170 120 C 220 105, 250 128, 300 95 C 350 62, 380 85, 430 70 C 480 55, 520 75, 570 48 C 610 26, 640 32, 660 25" fill="none" stroke="#16a34a" stroke-width="3.2" stroke-linecap="round"/>
+
+                    <!-- Highlight dot at latest point -->
+                    <circle cx="660" cy="25" r="5" fill="#16a34a" stroke="#ffffff" stroke-width="2.5"/>
+                </svg>
+            </div>
+
+            <!-- Month Axis below chart -->
+            <div class="chart-month-axis">
+                <span>Sep</span>
+                <span>Oct</span>
+                <span>Nov</span>
+                <span>Dec</span>
+                <span style="font-weight: 700; color: #0f172a;">2024</span>
+                <span>Feb</span>
+                <span>Mar</span>
+                <span>Apr</span>
+                <span>May</span>
+                <span>Jun</span>
+            </div>
+        </div>
+
+        <!-- 2. Interactive Round-Up Sweep Station -->
+        <div class="white-card">
+            <div class="white-card-header">
+                <div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">
+                        Micro-Investing Sweep Station
+                    </div>
+                    <div style="font-size: 0.78rem; color: #64748b;">
+                        Select spare-change rounding rule calibrated to your statements
+                    </div>
+                </div>
+                <div class="mult-btn-group">
+                    <span style="font-size: 0.72rem; color: #64748b; font-weight: 600; align-self: center; margin-right: 0.2rem;">Multiplier:</span>
+                    <button type="button" class="mult-btn active" id="btn-mult-1" onclick="setMultiplier(1)">1x</button>
+                    <button type="button" class="mult-btn" id="btn-mult-2" onclick="setMultiplier(2)">2x</button>
+                    <button type="button" class="mult-btn" id="btn-mult-3" onclick="setMultiplier(3)">3x</button>
+                    <button type="button" class="mult-btn" id="btn-mult-5" onclick="setMultiplier(5)">5x</button>
+                </div>
+            </div>
+
+            <!-- Sweep Rule Selectors -->
+            <div class="sweep-rules-grid">
+                <div class="rule-tile" id="rule-box-10" onclick="selectRule('10')">
+                    <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Nearest ₹10</div>
+                    <div class="rule-tile-val num-mono" style="font-size: 1.25rem; font-weight: 800; margin: 0.3rem 0; color: #334155;">
+                        ₹{{ "{:,.2f}".format((micro.roundup_totals.nearest_10 if micro.roundup_totals and micro.roundup_totals.nearest_10 is defined else 412.0) or 412.0) }}
+                    </div>
+                    <div style="font-size: 0.7rem; color: #94a3b8;">Conservative Pace</div>
+                </div>
+
+                <div class="rule-tile active" id="rule-box-50" onclick="selectRule('50')">
+                    <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Nearest ₹50 (Recommended)</div>
+                    <div class="rule-tile-val num-mono" style="font-size: 1.25rem; font-weight: 800; margin: 0.3rem 0; color: #0f172a;">
+                        ₹{{ "{:,.2f}".format((micro.roundup_totals.nearest_50 if micro.roundup_totals and micro.roundup_totals.nearest_50 is defined else 2402.0) or 2402.0) }}
+                    </div>
+                    <div style="font-size: 0.7rem; color: #16a34a; font-weight: 600;">Optimal Accumulation</div>
+                </div>
+
+                <div class="rule-tile" id="rule-box-100" onclick="selectRule('100')">
+                    <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Nearest ₹100</div>
+                    <div class="rule-tile-val num-mono" style="font-size: 1.25rem; font-weight: 800; margin: 0.3rem 0; color: #334155;">
+                        ₹{{ "{:,.2f}".format((micro.roundup_totals.nearest_100 if micro.roundup_totals and micro.roundup_totals.nearest_100 is defined else 4902.0) or 4902.0) }}
+                    </div>
+                    <div style="font-size: 0.7rem; color: #94a3b8;">High Velocity Stash</div>
+                </div>
+            </div>
+
+            <!-- Instant Dispatch Action Row -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.15rem 1.35rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Ready to Sweep via UPI 2.0</div>
+                    <div id="order-breakdown-note" style="font-size: 0.82rem; font-weight: 600; color: #0f172a;">
+                        Nearest ₹50 Rule (1x)
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 0.65rem; align-items: center;">
+                    <button type="button" onclick="setCustomAmount(1000)" class="btn btn-outline" style="font-size: 0.75rem; padding: 0.4rem 0.85rem;">
+                        +₹1,000 Top-Up
+                    </button>
+                    <button type="button" onclick="openPaymentGateway()" class="btn btn-lime" style="font-size: 0.85rem; font-weight: 800; padding: 0.55rem 1.4rem; background: #0f172a; color: #ffffff; border: none; cursor: pointer; border-radius: 10px;">
+                        Trigger Instant Sweep
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Demat Custodial Holdings Table -->
+        <div class="white-card">
+            <div class="white-card-header">
+                <div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">
+                        Demat Custodial Holdings
+                    </div>
+                    <div style="font-size: 0.78rem; color: #64748b;">
+                        Depository: CDSL | Demat Account: {{ micro.demat_summary.demat_acc }}
+                    </div>
+                </div>
+                <span style="font-size: 0.72rem; padding: 0.25rem 0.65rem; background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; font-weight: 700; border-radius: 9999px;">
+                    SEBI Reg INZ000204138
+                </span>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="clean-table" id="holdings-table">
+                    <thead>
+                        <tr>
+                            <th>Security</th>
+                            <th>Asset Class</th>
+                            <th style="text-align: right;">Units</th>
+                            <th style="text-align: right;">Avg NAV</th>
+                            <th style="text-align: right;">Live NAV</th>
+                            <th style="text-align: right;">Invested</th>
+                            <th style="text-align: right;">Current Value</th>
+                            <th style="text-align: right;">Return</th>
+                        </tr>
+                    </thead>
+                    <tbody id="holdings-table-body">
+                        {% for h in micro.demat_holdings %}
+                        <tr data-isin="{{ h.isin }}">
+                            <td style="font-weight: 700; color: #0f172a;">
+                                <div>{{ h.security }}</div>
+                                <div style="font-size: 0.68rem; color: #94a3b8;" class="num-mono">{{ h.isin }}</div>
+                            </td>
+                            <td style="font-size: 0.78rem; color: #64748b;">{{ h.asset_class }}</td>
+                            <td style="text-align: right; font-weight: 700;" class="num-mono row-units">{{ "{:,.3f}".format(h.units) }}</td>
+                            <td style="text-align: right;" class="num-mono">₹{{ "{:,.2f}".format(h.avg_nav) }}</td>
+                            <td style="text-align: right; font-weight: 700;" class="num-mono">₹{{ "{:,.2f}".format(h.current_nav) }}</td>
+                            <td style="text-align: right;" class="num-mono row-invested">₹{{ "{:,.2f}".format(h.invested) }}</td>
+                            <td style="text-align: right; font-weight: 800; color: #0f172a;" class="num-mono row-current">₹{{ "{:,.2f}".format(h.current_val) }}</td>
+                            <td style="text-align: right; font-weight: 800; color: #16a34a;" class="num-mono">{{ h.pnl_pct }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. Settled Trades & Executed Sweeps Ledger -->
+        <div class="white-card">
+            <div class="white-card-header">
+                <div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">
+                        Settled Trades &amp; Executed Sweeps
+                    </div>
+                    <div style="font-size: 0.78rem; color: #64748b;">
+                        Live clearing confirmation and official exchange contract slips
+                    </div>
+                </div>
+                <span id="ledger-count-text" style="font-size: 0.75rem; color: #64748b; font-family: var(--font-mono);">
+                    {{ executed_sweeps|length if executed_sweeps else 12 }} Sweeps Settled
+                </span>
+            </div>
+
+            <div style="overflow-x: auto; max-height: 340px;">
+                <table class="clean-table" id="sweeps-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Timestamp</th>
+                            <th>Rule &amp; Route</th>
+                            <th>Bank UTR</th>
+                            <th style="text-align: right;">Amount</th>
+                            <th style="text-align: right;">Units</th>
+                            <th>Status</th>
+                            <th>Receipt</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sweeps-table-body">
+                        {% if executed_sweeps %}
+                            {% for s in executed_sweeps %}
+                            <tr>
+                                <td class="num-mono" style="font-weight: 700; color: #0f172a; font-size: 0.8rem;">{{ s.order_id }}</td>
+                                <td style="font-size: 0.78rem; color: #64748b;">{{ (s.created_at or s.timestamp or 'Today')[:16] }}</td>
+                                <td style="font-size: 0.8rem; color: #475569;">
+                                    <div>{{ s.roundup_rule }}</div>
+                                    <div style="font-size: 0.7rem; color: #94a3b8;">{{ s.payment_method }}</div>
+                                </td>
+                                <td class="num-mono" style="font-size: 0.78rem; color: #0284c7;">{{ s.utr_number }}</td>
+                                <td style="text-align: right; font-weight: 800; color: #16a34a;" class="num-mono">₹{{ "{:,.2f}".format(s.amount) }}</td>
+                                <td style="text-align: right;" class="num-mono">{{ s.units_allotted }} units</td>
+                                <td>
+                                    <span style="font-size: 0.7rem; padding: 0.2rem 0.55rem; border-radius: 9999px; background: #f0fdf4; color: #16a34a; font-weight: 700; border: 1px solid #bbf7d0;">
+                                        Settled in Demat
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-outline" onclick='viewAllotmentReceipt("{{ s.order_id }}", {{ s.amount }}, "{{ s.utr_number }}", "{{ (s.created_at or s.timestamp or "Today")[:16] }}", "{{ s.payment_method }}")' style="font-size: 0.72rem; padding: 0.25rem 0.6rem;">
+                                        View Slip
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td class="num-mono" style="font-weight: 700; color: #0f172a; font-size: 0.8rem;">ORD-PAYLINE-B7281</td>
+                                <td style="font-size: 0.78rem; color: #64748b;">Today, 09:30 IST</td>
+                                <td style="font-size: 0.8rem; color: #475569;">
+                                    <div>Nearest ₹50 Sweep</div>
+                                    <div style="font-size: 0.7rem; color: #94a3b8;">UPI (Google Pay)</div>
+                                </td>
+                                <td class="num-mono" style="font-size: 0.78rem; color: #0284c7;">429188241029</td>
+                                <td style="text-align: right; font-weight: 800; color: #16a34a;" class="num-mono">₹2,402.00</td>
+                                <td style="text-align: right;" class="num-mono">8.298 units</td>
+                                <td>
+                                    <span style="font-size: 0.7rem; padding: 0.2rem 0.55rem; border-radius: 9999px; background: #f0fdf4; color: #16a34a; font-weight: 700; border: 1px solid #bbf7d0;">
+                                        Settled in Demat
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-outline" onclick="viewAllotmentReceipt('ORD-PAYLINE-B7281', 2402.00, '429188241029', 'Today, 09:30 IST', 'UPI (Google Pay)')" style="font-size: 0.72rem; padding: 0.25rem 0.6rem;">
+                                        View Slip
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN (Faithful to Portify: My Portfolio Card + Asset Allocation + Recent Actions Feed) -->
+    <div>
+        <!-- 1. My Portfolio Card (Matching Portify Screenshot) -->
+        <div class="white-card">
+            <div class="white-card-header" style="margin-bottom: 0.75rem;">
+                <div style="font-size: 1.15rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">
+                    My Portfolio
+                </div>
+                <button type="button" onclick="openPaymentGateway()" class="btn btn-lime" style="font-size: 0.8rem; font-weight: 800; padding: 0.38rem 0.95rem; background: #0f172a; color: #ffffff; border: none; cursor: pointer; border-radius: 8px;">
+                    + Deposit
+                </button>
+            </div>
+
+            <!-- Big Portfolio Total -->
+            <div class="num-mono" style="font-size: 2.1rem; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; line-height: 1.15;">
+                ₹{{ "{:,.2f}".format(micro.demat_summary.total_value or 12988.14) }}
+            </div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: #16a34a; margin-top: 0.35rem; display: flex; align-items: center; gap: 0.3rem;">
+                <span>+{{ micro.demat_summary.total_pnl_pct or 8.14 }}% this month</span>
+            </div>
+
+            <!-- Asset Allocation Section with 4 Segments -->
+            <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #f1f5f9;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <div style="font-size: 0.82rem; font-weight: 700; color: #0f172a;">Asset Allocation</div>
+                    <div style="font-size: 0.72rem; color: #64748b; font-family: var(--font-mono);">Total: 4 Assets</div>
+                </div>
+
+                <!-- Multi-segment bar matching Portify -->
+                <div class="allocation-bar-track">
+                    <div class="alloc-seg alloc-seg-blue" style="width: 55%;" title="Large-Cap Equity (55%)"></div>
+                    <div class="alloc-seg alloc-seg-amber" style="width: 25%;" title="Digital Gold (25%)"></div>
+                    <div class="alloc-seg alloc-seg-purple" style="width: 15%;" title="ELSS Tax Saver (15%)"></div>
+                    <div class="alloc-seg alloc-seg-green" style="width: 5%;" title="Liquid Reserve (5%)"></div>
+                </div>
+
+                <!-- Legend Breakdown Rows -->
+                <div>
+                    <div class="alloc-legend-row">
+                        <div class="alloc-dot-label">
+                            <span class="alloc-dot" style="background: #60a5fa;"></span>
+                            <span>Stocks / Index</span>
+                            <span style="font-size: 0.72rem; color: #94a3b8;" class="num-mono">55%</span>
+                        </div>
+                        <div class="num-mono" style="font-size: 0.85rem; font-weight: 700; color: #0f172a;">
+                            ₹{{ "{:,.2f}".format((micro.demat_summary.total_value or 12988.14) * 0.55) }}
+                        </div>
+                    </div>
+
+                    <div class="alloc-legend-row">
+                        <div class="alloc-dot-label">
+                            <span class="alloc-dot" style="background: #f59e0b;"></span>
+                            <span>Gold Bullion</span>
+                            <span style="font-size: 0.72rem; color: #94a3b8;" class="num-mono">25%</span>
+                        </div>
+                        <div class="num-mono" style="font-size: 0.85rem; font-weight: 700; color: #0f172a;">
+                            ₹{{ "{:,.2f}".format((micro.demat_summary.total_value or 12988.14) * 0.25) }}
+                        </div>
+                    </div>
+
+                    <div class="alloc-legend-row">
+                        <div class="alloc-dot-label">
+                            <span class="alloc-dot" style="background: #a855f7;"></span>
+                            <span>ELSS Tax Saver</span>
+                            <span style="font-size: 0.72rem; color: #94a3b8;" class="num-mono">15%</span>
+                        </div>
+                        <div class="num-mono" style="font-size: 0.85rem; font-weight: 700; color: #0f172a;">
+                            ₹{{ "{:,.2f}".format((micro.demat_summary.total_value or 12988.14) * 0.15) }}
+                        </div>
+                    </div>
+
+                    <div class="alloc-legend-row">
+                        <div class="alloc-dot-label">
+                            <span class="alloc-dot" style="background: #10b981;"></span>
+                            <span>Liquid Reserve</span>
+                            <span style="font-size: 0.72rem; color: #94a3b8;" class="num-mono">5%</span>
+                        </div>
+                        <div class="num-mono" style="font-size: 0.85rem; font-weight: 700; color: #0f172a;">
+                            ₹{{ "{:,.2f}".format((micro.demat_summary.total_value or 12988.14) * 0.05) }}
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" onclick="openPaymentGateway()" class="btn btn-outline" style="width: 100%; margin-top: 1rem; font-size: 0.82rem; padding: 0.55rem; justify-content: center;">
+                    Rebalance Portfolio
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. Recent Actions Feed (Faithful to Portify Screenshot) -->
+        <div class="white-card">
+            <div class="white-card-header" style="margin-bottom: 0.85rem;">
+                <div style="font-size: 1.15rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">
+                    Recent Actions
+                </div>
+                <a href="#sweeps-table" style="font-size: 0.75rem; color: #64748b; text-decoration: none; font-weight: 600;">
+                    View all
+                </a>
+            </div>
+
+            <!-- Feed Items -->
+            <div>
+                <!-- Item 1: Bought Nifty 50 -->
+                <div class="action-feed-item">
+                    <div class="action-feed-left">
+                        <div class="asset-icon-box asset-icon-blue" style="width: 32px; height: 32px; font-size: 0.72rem;">N50</div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.84rem; color: #0f172a;">UTI Nifty 50 Index</div>
+                            <div style="font-size: 0.7rem; color: #94a3b8;">+21.61 Units</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="action-type-pill action-pill-buy">Bought</span>
+                        <div class="num-mono" style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-top: 0.15rem;">
+                            -₹5,800.02
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2: Bought Gold BeES -->
+                <div class="action-feed-item">
+                    <div class="action-feed-left">
+                        <div class="asset-icon-box asset-icon-amber" style="width: 32px; height: 32px; font-size: 0.72rem;">GLD</div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.84rem; color: #0f172a;">Nippon Gold BeES</div>
+                            <div style="font-size: 0.7rem; color: #94a3b8;">+41.86 Units</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="action-type-pill action-pill-buy">Bought</span>
+                        <div class="num-mono" style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-top: 0.15rem;">
+                            -₹2,683.75
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3: Bought ELSS 80C -->
+                <div class="action-feed-item">
+                    <div class="action-feed-left">
+                        <div class="asset-icon-box asset-icon-purple" style="width: 32px; height: 32px; font-size: 0.72rem;">80C</div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.84rem; color: #0f172a;">Mirae ELSS 80C</div>
+                            <div style="font-size: 0.7rem; color: #94a3b8;">+17.39 Units</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="action-type-pill action-pill-buy">Bought</span>
+                        <div class="num-mono" style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-top: 0.15rem;">
+                            -₹1,904.25
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 4: Auto-Sweep Batch -->
+                <div class="action-feed-item">
+                    <div class="action-feed-left">
+                        <div class="asset-icon-box asset-icon-green" style="width: 32px; height: 32px; font-size: 0.72rem;">SWP</div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.84rem; color: #0f172a;">Round-Up Sweep</div>
+                            <div style="font-size: 0.7rem; color: #94a3b8;">16 Debits Rounded</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="action-type-pill action-pill-sweep">Swept</span>
+                        <div class="num-mono" style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-top: 0.15rem;">
+                            -₹482.00
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Safe Liquidity Buffer (Parametric VaR Audit) -->
+        <div class="white-card">
+            <div class="white-card-header" style="margin-bottom: 0.6rem;">
+                <div>
+                    <div style="font-size: 0.96rem; font-weight: 800; color: #0f172a;">
+                        Parametric VaR Liquidity Guard
+                    </div>
+                    <div style="font-size: 0.75rem; color: #64748b;">
+                        Safe-to-invest headroom preventing bank overdrafts
+                    </div>
+                </div>
+                <span style="font-size: 0.7rem; padding: 0.2rem 0.5rem; background: #f0fdf4; color: #16a34a; font-weight: 700; border-radius: 6px; border: 1px solid #bbf7d0;">
+                    95% Confidence
+                </span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 0.85rem;">
+                <span style="font-size: 0.8rem; color: #475569;">Safe Monthly Sweep Limit</span>
+                <span class="num-mono" style="font-size: 1.15rem; font-weight: 800; color: #0f172a;">
+                    ₹{{ "{:,.2f}".format((micro.safe_sip.monthly_safe_sip if micro.safe_sip and micro.safe_sip.monthly_safe_sip is defined else 4500.0) or 4500.0) }}
+                </span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 0.4rem;">
+                <span style="font-size: 0.8rem; color: #475569;">15-Day Outflow VaR</span>
+                <span class="num-mono" style="font-size: 0.9rem; font-weight: 700; color: #dc2626;">
+                    ₹{{ "{:,.2f}".format((micro.liquidity_risk.var_95_15day if micro.liquidity_risk and micro.liquidity_risk.var_95_15day is defined else 28862.0) or 28862.0) }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- EPIC GAMES INSPIRED CLEAN WHITE PAYMENT GATEWAY CHECKOUT MODAL            -->
+<!-- ========================================================================= -->
+<div class="modal-overlay" id="payment-gateway-modal">
+    <div class="epic-modal-box">
+        <!-- LEFT COLUMN: Order Summary -->
+        <div class="epic-left-col">
+            <div>
+                <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.5rem;">
+                    <div style="width: 28px; height: 28px; background: #0f172a; border-radius: 6px; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.85rem;">P</div>
+                    <span style="font-weight: 800; font-size: 1.1rem; color: #0f172a; font-family: var(--font-display);">Payline Gateway</span>
+                </div>
+
+                <div style="margin-bottom: 1.25rem;">
+                    <div style="font-size: 0.72rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Investment Allocation</div>
+                    <div id="modal-product-name" style="font-weight: 800; font-size: 1.05rem; color: #0f172a; margin-top: 0.2rem;">
+                        Balanced Wealth Engine
+                    </div>
+                    <div style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">
+                        CDSL Demat Allotment | BSE StAR MF
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid #e2e8f0; padding-top: 0.85rem; margin-top: 0.85rem;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #64748b; margin-bottom: 0.4rem;">
+                        <span>Principal Sweep</span>
+                        <span class="num-mono" id="epic-subtotal" style="color: #0f172a; font-weight: 700;">₹2,402.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #64748b; margin-bottom: 0.4rem;">
+                        <span>Stamp Duty (0.005%)</span>
+                        <span class="num-mono" id="epic-stamp-duty" style="color: #0f172a;">₹0.12</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #64748b; margin-bottom: 0.4rem;">
+                        <span>Processing Fee</span>
+                        <span style="color: #16a34a; font-weight: 700;">FREE (0.00%)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div style="border-top: 1px solid #e2e8f0; padding-top: 0.85rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <span style="font-size: 0.88rem; font-weight: 700; color: #0f172a;">Total Payable</span>
+                        <span class="num-mono" id="epic-total-amount" style="font-size: 1.45rem; font-weight: 800; color: #0f172a;">₹2,402.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Payment Method Selection & Checkout -->
+        <div class="epic-right-col">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <div style="font-size: 1.1rem; font-weight: 800; color: #0f172a; font-family: var(--font-display);">
+                    Select Payment Method
+                </div>
+                <button type="button" onclick="closePaymentGateway()" style="background: #f1f5f9; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 1rem; color: #64748b; cursor: pointer;">
+                    X
+                </button>
+            </div>
+
+            <!-- Method 1: UPI 2.0 -->
+            <div class="epic-method-card active" id="method-card-upi" onclick="selectEpicMethod('upi')">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="epic-radio-dot checked" id="radio-upi"></div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.88rem; color: #0f172a;">UPI 2.0 (Google Pay / PhonePe / Paytm)</div>
+                        <div style="font-size: 0.72rem; color: #64748b;">Instant authorization via VPA or Dynamic QR</div>
+                    </div>
+                </div>
+                <span style="font-size: 0.7rem; font-weight: 700; color: #16a34a; background: #f0fdf4; padding: 0.2rem 0.5rem; border-radius: 4px;">FASTEST</span>
+            </div>
+
+            <!-- Panel: UPI Details -->
+            <div id="epic-upi-panel" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; margin-bottom: 0.85rem;">
+                <div style="font-size: 0.76rem; font-weight: 700; color: #475569; margin-bottom: 0.4rem;">Virtual Payment Address (VPA)</div>
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.65rem;">
+                    <input type="text" id="input-upi-vpa" value="demo@okhdfcbank" placeholder="yourname@upi" style="flex: 1; padding: 0.55rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.82rem; font-family: var(--font-mono); outline: none;">
+                    <button type="button" onclick="toggleQrDisplay()" class="btn btn-outline" style="font-size: 0.75rem; padding: 0.55rem 0.85rem;">
+                        Scan QR
+                    </button>
+                </div>
+
+                <!-- Dynamic QR Box -->
+                <div id="epic-qr-container" style="display: none; text-align: center; padding: 0.75rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 0.5rem;">
+                    <img id="dynamic-upi-qr-img" src="" alt="UPI QR" style="width: 140px; height: 140px; margin: auto; display: block;">
+                    <div style="font-size: 0.7rem; color: #64748b; margin-top: 0.4rem;">Scan with any UPI app to authorize ₹2,402.00</div>
+                </div>
+            </div>
+
+            <!-- Method 2: Credit / Debit Card -->
+            <div class="epic-method-card" id="method-card-card" onclick="selectEpicMethod('card')">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="epic-radio-dot" id="radio-card"></div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.88rem; color: #0f172a;">Credit or Debit Card</div>
+                        <div style="font-size: 0.72rem; color: #64748b;">Visa, Mastercard, RuPay &amp; Diners Club</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel: Card Details -->
+            <div id="epic-card-panel" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; margin-bottom: 0.85rem;">
+                <div style="font-size: 0.76rem; font-weight: 700; color: #475569; margin-bottom: 0.4rem;">Card Number</div>
+                <input type="text" id="epic-card-num" value="8923 2461 5320 7642" style="width: 100%; padding: 0.55rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.82rem; font-family: var(--font-mono); margin-bottom: 0.6rem; outline: none;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+                    <div>
+                        <div style="font-size: 0.72rem; color: #64748b; margin-bottom: 0.2rem;">Expiry</div>
+                        <input type="text" value="07/28" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.82rem; font-family: var(--font-mono); outline: none;">
+                    </div>
+                    <div>
+                        <div style="font-size: 0.72rem; color: #64748b; margin-bottom: 0.2rem;">CVV</div>
+                        <input type="password" value="923" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.82rem; font-family: var(--font-mono); outline: none;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Method 3: Net Banking -->
+            <div class="epic-method-card" id="method-card-netbanking" onclick="selectEpicMethod('netbanking')">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="epic-radio-dot" id="radio-netbanking"></div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.88rem; color: #0f172a;">Net Banking (Retail &amp; Corporate)</div>
+                        <div style="font-size: 0.72rem; color: #64748b;">HDFC, ICICI, SBI, Axis, Kotak</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel: Net Banking Details -->
+            <div id="epic-netbanking-panel" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; margin-bottom: 0.85rem;">
+                <div style="font-size: 0.76rem; font-weight: 700; color: #475569; margin-bottom: 0.4rem;">Select Financial Institution</div>
+                <select style="width: 100%; padding: 0.55rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.82rem; outline: none; background: #ffffff;">
+                    <option value="HDFC">HDFC Bank (Primary Linked Account)</option>
+                    <option value="ICICI">ICICI Bank</option>
+                    <option value="SBI">State Bank of India</option>
+                    <option value="AXIS">Axis Bank</option>
+                    <option value="KOTAK">Kotak Mahindra Bank</option>
+                </select>
+            </div>
+
+            <!-- Method 4: NPCI AutoPay e-Mandate -->
+            <div class="epic-method-card" id="method-card-autopay" onclick="selectEpicMethod('autopay')">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="epic-radio-dot" id="radio-autopay"></div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.88rem; color: #0f172a;">NPCI AutoPay e-Mandate</div>
+                        <div style="font-size: 0.72rem; color: #64748b;">Automated recurring midnight sweep</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel: AutoPay Details -->
+            <div id="epic-autopay-panel" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; margin-bottom: 0.85rem;">
+                <div style="font-size: 0.76rem; color: #475569; line-height: 1.45;">
+                    Sets up an automated daily midnight sweep with maximum monthly cap of ₹15,000. You can pause or cancel anytime.
+                </div>
+            </div>
+
+            <div style="margin-top: auto; padding-top: 1rem;">
+                <button type="button" id="epic-pay-btn" onclick="executeEpicPayment()" class="epic-pay-btn">
+                    Authorize &amp; Execute Sweep
+                </button>
+                <div style="text-align: center; font-size: 0.68rem; color: #94a3b8; margin-top: 0.6rem;">
+                    Secured by 256-bit TLS encryption | SEBI &amp; NPCI Compliant
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- EXCHANGE SETTLEMENT RESULT MODAL                                          -->
+<!-- ========================================================================= -->
+<div class="modal-overlay" id="order-result-modal">
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 2rem; max-width: 480px; width: 100%; box-shadow: 0 25px 70px rgba(0,0,0,0.2); text-align: center;">
+        <!-- Processing Step -->
+        <div id="modal-step-processing">
+            <div style="width: 44px; height: 44px; border: 4px solid #f1f5f9; border-top-color: #0f172a; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1.25rem;"></div>
+            <div id="modal-step-title" style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin-bottom: 0.4rem;">Connecting to Bank CBS...</div>
+            <div id="modal-step-desc" style="font-size: 0.82rem; color: #64748b;">Debiting verified account via UPI 2.0 switch...</div>
+        </div>
+
+        <!-- Success Step -->
+        <div id="modal-step-success" style="display: none;">
+            <div style="width: 48px; height: 48px; background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: #16a34a; font-weight: 900; font-size: 1.25rem;">
+                OK
+            </div>
+            <div style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 0.35rem;">
+                Sweep Execution Settled
+            </div>
+            <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 1.25rem;">
+                Units allotted in CDSL Demat depository
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; text-align: left; margin-bottom: 1.25rem; font-size: 0.82rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                    <span style="color: #64748b;">Amount Swept</span>
+                    <span class="num-mono" id="succ-order-amt" style="font-weight: 800; color: #0f172a;">₹2,402.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                    <span style="color: #64748b;">Units Allotted</span>
+                    <span class="num-mono" id="succ-order-units" style="font-weight: 700; color: #0f172a;">8.298 units</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                    <span style="color: #64748b;">Exchange Ref</span>
+                    <span class="num-mono" id="succ-order-id" style="font-weight: 700; color: #0284c7;">ORD-PAYLINE-B7281</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #64748b;">UTR Number</span>
+                    <span class="num-mono" id="succ-order-utr" style="color: #64748b;">429188241029</span>
+                </div>
+            </div>
+
+            <!-- SMS Alert Banner -->
+            <div id="live-sms-banner" style="display: none; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.72rem; color: #1e40af; text-align: left; margin-bottom: 1.25rem; font-family: var(--font-mono);">
+                <div style="font-weight: 700; margin-bottom: 0.2rem;">HDFC Bank Alert:</div>
+                <div id="live-sms-text">Debited from A/c **8912 IST to VPA payline.invest@icici.</div>
+            </div>
+
+            <div style="display: flex; gap: 0.65rem;">
+                <button type="button" onclick="showLatestReceipt()" class="btn btn-outline" style="flex: 1; font-size: 0.82rem; padding: 0.6rem;">
+                    View Allotment Slip
+                </button>
+                <button type="button" onclick="closeOrderResultModal()" class="btn btn-lime" style="flex: 1; font-size: 0.82rem; padding: 0.6rem; background: #0f172a; color: #ffffff; border: none; cursor: pointer;">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- OFFICIAL ALLOTMENT RECEIPT SLIP MODAL                                     -->
+<!-- ========================================================================= -->
+<div class="modal-overlay" id="allotment-receipt-modal">
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 2rem; max-width: 520px; width: 100%; box-shadow: 0 25px 70px rgba(0,0,0,0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0;">
+            <div>
+                <div style="font-size: 1.15rem; font-weight: 800; color: #0f172a;">Contract Allotment Slip</div>
+                <div style="font-size: 0.72rem; color: #64748b;">Payline Securities | CDSL Depository Participant</div>
+            </div>
+            <button type="button" onclick="closeReceiptModal()" style="background: #f1f5f9; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 1rem; color: #64748b; cursor: pointer;">
+                X
+            </button>
+        </div>
+
+        <div style="font-size: 0.82rem; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #64748b;">Order Identifier:</span>
+                <span class="num-mono" id="rcpt-order-id" style="font-weight: 700; color: #0f172a;">ORD-PAYLINE-B7281</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #64748b;">Execution Date:</span>
+                <span id="rcpt-date" style="color: #0f172a;">Today</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #64748b;">Settlement UTR:</span>
+                <span class="num-mono" id="rcpt-utr" style="color: #0284c7;">429188241029</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #64748b;">Payment Method:</span>
+                <span id="rcpt-method" style="color: #0f172a;">UPI 2.0</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #64748b;">Gross Principal:</span>
+                <span class="num-mono" id="rcpt-gross" style="font-weight: 700; color: #0f172a;">₹2,402.00</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #64748b;">Govt Stamp Duty:</span>
+                <span class="num-mono" id="rcpt-stamp" style="color: #64748b;">₹0.12</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-top: 1px dashed #cbd5e1; padding-top: 0.5rem; font-weight: 800;">
+                <span style="color: #0f172a;">Net Invested Value:</span>
+                <span class="num-mono" id="rcpt-net" style="color: #16a34a; font-size: 1rem;">₹2,401.88</span>
+            </div>
+            <div style="font-size: 0.72rem; color: #64748b; background: #f8fafc; padding: 0.5rem 0.75rem; border-radius: 8px; margin-top: 0.35rem;" id="rcpt-breakdown">
+                8.298 units @ ₹289.45 = ₹2,402.00
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 0.65rem;">
+            <button type="button" onclick="window.print()" class="btn btn-outline" style="flex: 1; font-size: 0.82rem; padding: 0.6rem;">
+                Print Allotment Slip
+            </button>
+            <button type="button" onclick="closeReceiptModal()" class="btn btn-lime" style="flex: 1; font-size: 0.82rem; padding: 0.6rem; background: #0f172a; color: #ffffff; border: none; cursor: pointer;">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Raw benchmark values from Python backend
+const rawBaseAmounts = {
+    '10': {{ micro.roundup_totals.nearest_10|default(412.0)|tojson }},
+    '50': {{ micro.roundup_totals.nearest_50|default(2402.0)|tojson }},
+    '100': {{ micro.roundup_totals.nearest_100|default(4902.0)|tojson }}
+};
+
+let activeRule = '50';
+let activeMultiplier = 1;
+let customDepositAmount = null;
+let customTargetAsset = null;
+let selectedEpicMethod = 'upi';
+let latestTransactionData = null;
+
+function setTimeframeChart(btn, tf) {
+    document.querySelectorAll('.timeframe-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function selectRule(rule) {
+    customDepositAmount = null;
+    customTargetAsset = null;
+    activeRule = rule;
+    ['10', '50', '100'].forEach(r => {
+        const tile = document.getElementById(`rule-box-${r}`);
+        if (tile) tile.classList.remove('active');
+    });
+    const activeTile = document.getElementById(`rule-box-${rule}`);
+    if (activeTile) activeTile.classList.add('active');
+
+    updateAllCalculations();
+}
+
+function setMultiplier(mult) {
+    customDepositAmount = null;
+    activeMultiplier = mult;
+    [1, 2, 3, 5].forEach(m => {
+        const btn = document.getElementById(`btn-mult-${m}`);
+        if (btn) {
+            if (m === mult) btn.classList.add('active');
+            else btn.classList.remove('active');
+        }
+    });
+
+    updateAllCalculations();
+}
+
+function setCustomAmount(amt) {
+    customDepositAmount = amt;
+    updateAllCalculations();
+}
+
+function computeCurrentOrderTotal() {
+    if (customDepositAmount !== null && customDepositAmount > 0) {
+        return customDepositAmount;
+    }
+    const baseAmt = rawBaseAmounts[activeRule] || 2402.0;
+    return baseAmt * activeMultiplier;
+}
+
+function updateAllCalculations() {
+    const totalOrder = computeCurrentOrderTotal();
+    const formattedTotal = `₹${totalOrder.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+    const pendingElem = document.getElementById('pending-sweep-amount');
+    if (pendingElem) pendingElem.textContent = formattedTotal;
+
+    const breakdownNote = document.getElementById('order-breakdown-note');
+    if (breakdownNote) {
+        if (customDepositAmount !== null) {
+            breakdownNote.textContent = `Instant Custom Deposit: ₹${customDepositAmount.toLocaleString('en-IN')}`;
+        } else {
+            breakdownNote.textContent = `Nearest ₹${activeRule} Rule (${activeMultiplier}x Multiplier)`;
+        }
+    }
+}
+
+function openPaymentGatewayWithAsset(assetName, nav) {
+    customTargetAsset = assetName;
+    openPaymentGateway();
+    const modalProduct = document.getElementById('modal-product-name');
+    if (modalProduct) modalProduct.textContent = assetName;
+}
+
+function openPaymentGateway() {
+    const totalOrder = computeCurrentOrderTotal();
+    const stampDuty = Math.max(0.01, totalOrder * 0.00005);
+    const formattedTotal = `₹${totalOrder.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+    const subtotalElem = document.getElementById('epic-subtotal');
+    if (subtotalElem) subtotalElem.textContent = formattedTotal;
+
+    const stampElem = document.getElementById('epic-stamp-duty');
+    if (stampElem) stampElem.textContent = `₹${stampDuty.toFixed(2)}`;
+
+    const totalElem = document.getElementById('epic-total-amount');
+    if (totalElem) totalElem.textContent = formattedTotal;
+
+    const payBtn = document.getElementById('epic-pay-btn');
+    if (payBtn) payBtn.textContent = `Authorize & Execute (${formattedTotal})`;
+
+    // Generate real UPI QR
+    const orderRef = 'ORD' + Math.floor(100000 + Math.random() * 900000);
+    const upiUri = `upi://pay?pa=payline.invest@icici&pn=Payline%20Wealth&mc=6211&tid=${orderRef}&tr=${orderRef}&tn=Payline%20Micro%20Sweep&am=${totalOrder.toFixed(2)}&cu=INR`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUri)}`;
+    const qrImg = document.getElementById('dynamic-upi-qr-img');
+    if (qrImg) qrImg.src = qrUrl;
+
+    selectEpicMethod('upi');
+    const modal = document.getElementById('payment-gateway-modal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closePaymentGateway() {
+    document.getElementById('payment-gateway-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function selectEpicMethod(method) {
+    selectedEpicMethod = method;
+    ['card', 'upi', 'netbanking', 'autopay'].forEach(m => {
+        const card = document.getElementById(`method-card-${m}`);
+        const radio = document.getElementById(`radio-${m}`);
+        if (card) card.classList.remove('active');
+        if (radio) radio.classList.remove('checked');
+
+        const panel = document.getElementById(`epic-${m}-panel`);
+        if (panel) panel.style.display = 'none';
+    });
+
+    const activeCard = document.getElementById(`method-card-${method}`);
+    const activeRadio = document.getElementById(`radio-${method}`);
+    if (activeCard) activeCard.classList.add('active');
+    if (activeRadio) activeRadio.classList.add('checked');
+
+    const activePanel = document.getElementById(`epic-${method}-panel`);
+    if (activePanel) activePanel.style.display = 'block';
+}
+
+function toggleQrDisplay() {
+    const qrBox = document.getElementById('epic-qr-container');
+    if (qrBox) {
+        qrBox.style.display = (qrBox.style.display === 'none') ? 'block' : 'none';
+    }
+}
+
+function executeEpicPayment() {
+    let methodLabel = 'UPI 2.0 (Google Pay)';
+    if (selectedEpicMethod === 'card') {
+        const cardInput = document.getElementById('epic-card-num');
+        const cardNum = cardInput ? (cardInput.value.slice(-4) || '7642') : '7642';
+        methodLabel = `Debit Card (ending ${cardNum})`;
+    } else if (selectedEpicMethod === 'netbanking') {
+        methodLabel = 'HDFC NetBanking';
+    } else if (selectedEpicMethod === 'autopay') {
+        methodLabel = 'NPCI UPI AutoPay';
+    } else if (selectedEpicMethod === 'upi') {
+        const vpaInput = document.getElementById('input-upi-vpa');
+        const vpa = vpaInput ? (vpaInput.value || 'demo@okhdfcbank') : 'demo@okhdfcbank';
+        methodLabel = `UPI (${vpa})`;
+    }
+    confirmPaymentSuccess(methodLabel);
+}
+
+async function confirmPaymentSuccess(paymentMethod) {
+    closePaymentGateway();
+
+    const sweepAmt = computeCurrentOrderTotal();
+    const ruleLabel = customDepositAmount ? `Direct Deposit (₹${customDepositAmount})` : `Nearest ₹${activeRule} (${activeMultiplier}x)`;
+
+    const modal = document.getElementById('order-result-modal');
+    const proc = document.getElementById('modal-step-processing');
+    const succ = document.getElementById('modal-step-success');
+
+    modal.style.display = 'flex';
+    proc.style.display = 'block';
+    succ.style.display = 'none';
+
+    document.getElementById('modal-step-title').textContent = 'Connecting to Bank CBS & NPCI Switch...';
+    document.getElementById('modal-step-desc').textContent = `Debiting account via ${paymentMethod}...`;
+
+    setTimeout(async () => {
+        document.getElementById('modal-step-title').textContent = 'Allotting Units in CDSL Demat...';
+        document.getElementById('modal-step-desc').textContent = `Routing ₹${sweepAmt.toFixed(2)} to BSE StAR MF Clearing...`;
+
+        try {
+            const resp = await fetch('/api/invest/sweep', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    amount: sweepAmt,
+                    rule: ruleLabel,
+                    allocation: 'balanced',
+                    payment_method: paymentMethod
+                })
+            });
+            const data = await resp.json();
+            latestTransactionData = data;
+
+            setTimeout(() => {
+                proc.style.display = 'none';
+                succ.style.display = 'block';
+
+                // Update Success Modal Elements
+                document.getElementById('succ-order-amt').textContent = `₹${data.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+                document.getElementById('succ-order-utr').textContent = `Bank UTR: ${data.utr_number}`;
+                document.getElementById('succ-order-id').textContent = data.order_id;
+                document.getElementById('succ-order-units').textContent = `${data.units_allotted} units`;
+
+                // Update SMS alert banner
+                document.getElementById('live-sms-text').textContent = data.sms_alert;
+                document.getElementById('live-sms-banner').style.display = 'block';
+
+                // Update Page Top Ribbon
+                if (data.total_swept) {
+                    const depElem = document.getElementById('portfolio-deployed-display');
+                    if (depElem) depElem.textContent = `₹${data.total_swept.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+                    const valElem = document.getElementById('portfolio-value-display');
+                    if (valElem) valElem.textContent = `₹${data.portfolio_value.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+                }
+
+                // Add to Demat Holdings table
+                const holdingsTbody = document.getElementById('holdings-table-body');
+                if (holdingsTbody) {
+                    const firstRow = holdingsTbody.querySelector('tr[data-isin]');
+                    if (firstRow) {
+                        const unitsCell = firstRow.querySelector('.row-units');
+                        if (unitsCell && data.units_allotted) {
+                            const curUnits = parseFloat(unitsCell.textContent.replace(/,/g, ''));
+                            unitsCell.textContent = (curUnits + data.units_allotted).toFixed(3);
+                        }
+                    }
+                }
+
+                // Prepend to Settled Trades table
+                const tbody = document.getElementById('sweeps-table-body');
+                if (tbody) {
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td class="num-mono" style="color: #0f172a; font-weight: 700; font-size: 0.8rem;">${data.order_id}</td>
+                        <td style="color: #64748b; font-size: 0.78rem;">Just now</td>
+                        <td style="color: #475569; font-size: 0.8rem;">
+                            <div>${data.roundup_rule}</div>
+                            <div style="font-size: 0.7rem; color: #94a3b8;">${data.payment_method}</div>
+                        </td>
+                        <td class="num-mono" style="color: #0284c7; font-size: 0.78rem;">${data.utr_number}</td>
+                        <td class="num-mono" style="color: #16a34a; font-weight: 800; font-size: 0.92rem; text-align: right;">₹${data.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                        <td class="num-mono" style="color: #0f172a; font-size: 0.82rem; text-align: right;">${data.units_allotted} units</td>
+                        <td>
+                            <span style="font-size: 0.7rem; padding: 0.2rem 0.55rem; border-radius: 9999px; background: #f0fdf4; color: #16a34a; font-weight: 700; border: 1px solid #bbf7d0;">
+                                Settled in Demat
+                            </span>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline" onclick="viewAllotmentReceipt('${data.order_id}', ${data.amount}, '${data.utr_number}', 'Just now', '${data.payment_method}')" style="font-size: 0.72rem; padding: 0.25rem 0.6rem;">
+                                View Slip
+                            </button>
+                        </td>
+                    `;
+                    tbody.insertBefore(newRow, tbody.firstChild);
+
+                    const countText = document.getElementById('ledger-count-text');
+                    if (countText) {
+                        const currentRows = tbody.getElementsByTagName('tr').length;
+                        countText.textContent = `${currentRows} Sweeps Settled`;
+                    }
+                }
+            }, 600);
+        } catch (err) {
+            alert('Error processing transaction: ' + err);
+            closeOrderResultModal();
+        }
+    }, 800);
+}
+
+function closeOrderResultModal() {
+    document.getElementById('order-result-modal').style.display = 'none';
+}
+
+function showLatestReceipt() {
+    closeOrderResultModal();
+    if (latestTransactionData) {
+        viewAllotmentReceipt(
+            latestTransactionData.order_id,
+            latestTransactionData.amount,
+            latestTransactionData.utr_number,
+            'Just now',
+            latestTransactionData.payment_method
+        );
+    }
+}
+
+function viewAllotmentReceipt(orderId, amount, utr, date, method) {
+    document.getElementById('rcpt-order-id').textContent = orderId;
+    document.getElementById('rcpt-date').textContent = date;
+    document.getElementById('rcpt-utr').textContent = utr;
+    document.getElementById('rcpt-method').textContent = method || 'UPI 2.0 Direct';
+
+    const gross = parseFloat(amount);
+    const stamp = gross * 0.00005;
+    const net = gross - stamp;
+    const units = (gross / 289.45).toFixed(3);
+
+    document.getElementById('rcpt-gross').textContent = `₹${gross.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+    document.getElementById('rcpt-stamp').textContent = `₹${stamp.toFixed(2)}`;
+    document.getElementById('rcpt-net').textContent = `₹${net.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+    document.getElementById('rcpt-breakdown').textContent = `${units} units @ ₹289.45 = ₹${gross.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+
+    document.getElementById('allotment-receipt-modal').style.display = 'flex';
+}
+
+function closeReceiptModal() {
+    document.getElementById('allotment-receipt-modal').style.display = 'none';
+}
+
+// Initial calculation on load
+updateAllCalculations();
+</script>
+{% endblock %}

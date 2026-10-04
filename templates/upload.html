@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block title %}Payline | Statement Intake &amp; Normalization{% endblock %}
+
+{% block head %}
+<style>
+@keyframes floatIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.upload-zone {
+    border: 2px dashed #cbd5e1;
+    border-radius: 16px;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: border-color 0.25s, background 0.25s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+.upload-zone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(132,204,22,0.05) 0%, transparent 70%);
+    pointer-events: none;
+}
+.upload-zone:hover, .upload-zone.drag-over {
+    border-color: #84cc16;
+    background: #f1f5f9;
+    transform: scale(1.01);
+}
+.upload-zone:hover::before, .upload-zone.drag-over::before {
+    background: radial-gradient(ellipse at center, rgba(132,204,22,0.1) 0%, transparent 70%);
+}
+.upload-icon {
+    width: 54px;
+    height: 54px;
+    background: #ecfdf5;
+    border: 1px solid #bbf7d0;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: #059669;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+}
+.upload-zone:hover .upload-icon {
+    background: #d1fae5;
+    border-color: #86efac;
+    transform: translateY(-2px);
+}
+.bank-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.65rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-pill);
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #475569;
+    letter-spacing: 0.03em;
+    font-family: var(--font-display);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.telemetry-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+.telemetry-row:last-child { border-bottom: none; }
+.telemetry-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #84cc16;
+    flex-shrink: 0;
+}
+.schema-code {
+    display: inline-block;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    color: #4f46e5;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    letter-spacing: -0.01em;
+}
+.active-dataset-banner {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+    border: 1.5px solid #86efac;
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; animation: floatIn 0.4s ease both;">
+    <div>
+        <div class="page-tag">Statement Intake</div>
+        <h1 class="page-title">Statement Intake &amp; Normalization</h1>
+        <p class="page-desc">
+            Upload bank statement CSV files for local ML categorization, statistical auditing, and wealth analytics. All processing runs in-memory with zero data leakage.
+        </p>
+    </div>
+</div>
+
+{% if active_dataset %}
+<div class="active-dataset-banner">
+    <div>
+        <div style="font-size: 0.7rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.3rem; font-family: var(--font-display);">
+            Active Dataset In Memory
+        </div>
+        <div style="font-size: 1.15rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; font-family: var(--font-display);">
+            {{ active_dataset.filename }}
+        </div>
+        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.2rem;" class="num-mono">
+            {{ active_dataset.row_count }} transactions | INR {{ "{:,.2f}".format(active_dataset.total_income) }} credits | INR {{ "{:,.2f}".format(active_dataset.total_expense) }} debits
+        </div>
+    </div>
+    <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+        <a href="/dashboard" class="btn btn-lime" style="font-size: 0.82rem; padding: 0.5rem 1.1rem;">Open Dashboard</a>
+        <a href="/subscriptions" class="btn btn-outline" style="border-color: #cbd5e1; font-size: 0.82rem; padding: 0.5rem 1.1rem;">Subscriptions</a>
+        <a href="/invest" class="btn btn-outline" style="border-color: #cbd5e1; font-size: 0.82rem; padding: 0.5rem 1.1rem;">Micro-Investing</a>
+        <a href="/advisor" class="btn btn-outline" style="border-color: #cbd5e1; font-size: 0.82rem; padding: 0.5rem 1.1rem;">AI Advisor</a>
+    </div>
+</div>
+{% endif %}
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+
+    <!-- Upload Card -->
+    <div class="card" style="margin-bottom: 0;">
+        <div class="card-header">
+            <div>
+                <div class="card-title">Upload Statement File</div>
+                <div class="card-subtitle">UTF-8 encoded CSV from any major Indian bank</div>
+            </div>
+            <span style="font-size: 0.68rem; font-weight: 700; color: #4d7c0f; background: rgba(132,204,22,0.15); border: 1px solid #84cc16; padding: 0.2rem 0.55rem; border-radius: 6px; letter-spacing: 0.04em; font-family: var(--font-display);">CSV ONLY</span>
+        </div>
+
+        <form action="/upload" method="POST" enctype="multipart/form-data" id="upload-form">
+            <!-- Drop zone -->
+            <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click();">
+                <input type="file" id="file-input" name="file" accept=".csv" style="display: none;" onchange="updateFileName(this);">
+
+                <div class="upload-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4d7c0f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                </div>
+
+                <div style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem;" id="upload-label">
+                    Drop CSV file here or click to browse
+                </div>
+                <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 1rem;">
+                    Supports SBI, HDFC, ICICI, Axis, Kotak, PNB, Standard Format
+                </div>
+
+                <div style="display: flex; justify-content: center; gap: 0.4rem; flex-wrap: wrap;">
+                    <span class="bank-chip">SBI</span>
+                    <span class="bank-chip">HDFC</span>
+                    <span class="bank-chip">ICICI</span>
+                    <span class="bank-chip">AXIS</span>
+                    <span class="bank-chip">KOTAK</span>
+                    <span class="bank-chip">PNB</span>
+                </div>
+            </div>
+
+            <button type="submit" id="submit-btn" class="btn btn-lime" style="width: 100%; padding: 0.82rem; font-weight: 800; margin-top: 1.25rem; font-size: 0.92rem; border-radius: 12px; letter-spacing: -0.02em;">
+                Process Statement In-Memory
+            </button>
+        </form>
+    </div>
+
+    <!-- Benchmark Dataset Card -->
+    <div class="card" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Pre-Verified Benchmark Dataset</div>
+                    <div class="card-subtitle">Zero-setup institutional demo with real-world telemetry</div>
+                </div>
+                <span style="font-size: 0.68rem; font-weight: 700; color: #059669; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); padding: 0.2rem 0.55rem; border-radius: 6px; letter-spacing: 0.04em; font-family: var(--font-display);">VERIFIED</span>
+            </div>
+
+            <p style="font-size: 0.86rem; color: #475569; line-height: 1.65; margin-bottom: 1.5rem;">
+                Load our curated 3-month Indian banking statement comprising 103 real-world transactions, engineered to exercise all 14 ML classification categories, 50/30/20 audit, anomaly detection, and micro-investment simulations.
+            </p>
+
+            <!-- Telemetry Stats -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem 1.1rem; margin-bottom: 1.5rem;">
+                <div style="font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.75rem; font-family: var(--font-display);">Telemetry Profile</div>
+                <div class="telemetry-row">
+                    <span class="telemetry-dot"></span>
+                    <span style="font-size: 0.8rem; color: #64748b; flex: 1;">Total Records</span>
+                    <span class="num-mono" style="font-size: 0.82rem; font-weight: 700; color: #0f172a;">103 Transactions</span>
+                </div>
+                <div class="telemetry-row">
+                    <span class="telemetry-dot" style="background: #059669;"></span>
+                    <span style="font-size: 0.8rem; color: #64748b; flex: 1;">Total Credits</span>
+                    <span class="num-mono" style="font-size: 0.82rem; font-weight: 700; color: #059669;">INR 2,39,565</span>
+                </div>
+                <div class="telemetry-row">
+                    <span class="telemetry-dot" style="background: #dc2626;"></span>
+                    <span style="font-size: 0.8rem; color: #64748b; flex: 1;">Total Debits</span>
+                    <span class="num-mono" style="font-size: 0.82rem; font-weight: 700; color: #dc2626;">INR 1,75,098</span>
+                </div>
+                <div class="telemetry-row">
+                    <span class="telemetry-dot" style="background: #6366f1;"></span>
+                    <span style="font-size: 0.8rem; color: #64748b; flex: 1;">Payment Rails</span>
+                    <span style="font-size: 0.78rem; font-weight: 600; color: #4f46e5;">UPI, NEFT, POS, IMPS</span>
+                </div>
+            </div>
+        </div>
+
+        <a href="/load-sample" class="btn btn-lime" style="width: 100%; padding: 0.82rem; font-weight: 800; font-size: 0.92rem; border-radius: 12px; letter-spacing: -0.02em; text-align: center;">
+            Load Benchmark Dataset (1-Click)
+        </a>
+    </div>
+</div>
+
+<!-- CSV Schema Reference Card -->
+<div class="card">
+    <div class="card-header">
+        <div>
+            <div class="card-title">Required CSV Column Schema</div>
+            <div class="card-subtitle">Standard banking export format specification | all 5 columns required</div>
+        </div>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="clean-table">
+            <thead>
+                <tr>
+                    <th>Column Name</th>
+                    <th>Data Type</th>
+                    <th>Accepted Formats</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="schema-code">Date</span></td>
+                    <td style="color: #475569;">Date / String</td>
+                    <td><span class="schema-code">DD/MM/YYYY</span> <span style="color: #64748b; font-size: 0.75rem;">or</span> <span class="schema-code">YYYY-MM-DD</span></td>
+                    <td style="color: #475569;">Transaction posting date</td>
+                </tr>
+                <tr>
+                    <td><span class="schema-code">Description</span></td>
+                    <td style="color: #475569;">String</td>
+                    <td style="color: #64748b; font-size: 0.8rem;">UPI string, merchant name, NEFT reference</td>
+                    <td style="color: #475569;">Used by ML categorizer</td>
+                </tr>
+                <tr>
+                    <td><span class="schema-code">Amount</span></td>
+                    <td style="color: #475569;">Numeric</td>
+                    <td><span class="schema-code">450.00</span></td>
+                    <td style="color: #475569;">Positive float in INR</td>
+                </tr>
+                <tr>
+                    <td><span class="schema-code">Balance</span></td>
+                    <td style="color: #475569;">Numeric</td>
+                    <td><span class="schema-code">72140.50</span></td>
+                    <td style="color: #475569;">Post-transaction ledger balance</td>
+                </tr>
+                <tr>
+                    <td><span class="schema-code">Type</span></td>
+                    <td style="color: #475569;">String</td>
+                    <td><span class="schema-code">Debit</span> <span style="color: #64748b; font-size: 0.75rem;">or</span> <span class="schema-code">Credit</span></td>
+                    <td style="color: #475569;">Direction of cashflow</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updateFileName(input) {
+    if (input.files && input.files[0]) {
+        const name = input.files[0].name;
+        const size = (input.files[0].size / 1024).toFixed(1);
+        const label = document.getElementById('upload-label');
+        label.innerHTML = `<span style="color: #15803d; font-weight: 700;">Selected:</span> ${name} <span style="font-size: 0.75rem; color: #64748b;">(${size} KB)</span>`;
+        document.querySelector('.upload-zone').style.borderColor = '#84cc16';
+    }
+}
+
+// Drag & Drop
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('drag-over');
+});
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        updateFileName(fileInput);
+    }
+});
+
+// Show loading state on submit
+document.getElementById('upload-form').addEventListener('submit', () => {
+    const btn = document.getElementById('submit-btn');
+    btn.textContent = 'Processing...';
+    btn.style.opacity = '0.7';
+    btn.disabled = true;
+});
+</script>
+{% endblock %}

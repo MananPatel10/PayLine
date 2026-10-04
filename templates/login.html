@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In | Payline Financial Intelligence{% endblock %}
+
+{% block head %}
+<style>
+@keyframes floatIn {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.auth-card {
+    animation: floatIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.auth-input {
+    width: 100%;
+    padding: 0.82rem 1.1rem;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    color: #0f172a;
+    font-size: 0.92rem;
+    font-family: var(--font-main);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    letter-spacing: -0.01em;
+}
+.auth-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+.auth-input::placeholder {
+    color: #94a3b8;
+}
+.auth-label {
+    display: block;
+    font-size: 0.73rem;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 0.45rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-family: var(--font-display);
+}
+.demo-btn {
+    background: rgba(132, 204, 22, 0.15);
+    border: 1px solid #84cc16;
+    color: #4d7c0f;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.42rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-display);
+    transition: all 0.2s;
+    letter-spacing: -0.01em;
+}
+.demo-btn:hover {
+    background: rgba(132, 204, 22, 0.25);
+    transform: translateY(-1px);
+}
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+    color: #94a3b8;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e2e8f0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 420px; margin: 1.5rem auto 4rem;">
+    <!-- Auth Card -->
+    <div class="auth-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 28px; padding: 2.75rem 2.25rem; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.05); color: #0f172a;">
+
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 2.25rem;">
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(132,204,22,0.15); border: 1px solid #84cc16; padding: 0.28rem 0.85rem; border-radius: 9999px; font-size: 0.68rem; font-weight: 800; color: #4d7c0f; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; font-family: var(--font-display);">
+                <span style="width: 5px; height: 5px; border-radius: 50%; background: #4d7c0f; display: inline-block;"></span>
+                Secure Authorization
+            </div>
+            <h1 style="font-size: 1.85rem; font-weight: 800; letter-spacing: -0.04em; color: #0f172a; margin-bottom: 0.5rem; font-family: var(--font-display); line-height: 1.1;">
+                Sign in to Payline
+            </h1>
+            <p style="font-size: 0.85rem; color: #64748b; letter-spacing: -0.01em; line-height: 1.5;">
+                Access your private financial intelligence vault
+            </p>
+        </div>
+
+        <form action="/login{% if next_url %}?next={{ next_url }}{% endif %}" method="POST">
+            {% if next_url %}
+            <input type="hidden" name="next" value="{{ next_url }}">
+            {% endif %}
+
+            <div style="margin-bottom: 1.1rem;">
+                <label for="email" class="auth-label">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="name@company.com" required class="auth-input">
+            </div>
+
+            <div style="margin-bottom: 1.75rem;">
+                <label for="password" class="auth-label">Password</label>
+                <input type="password" id="password" name="password" placeholder="Password" required class="auth-input">
+            </div>
+
+            <button type="submit" class="btn btn-lime" style="width: 100%; padding: 0.82rem; font-size: 0.92rem; font-weight: 800; margin-bottom: 1rem; letter-spacing: -0.02em; border-radius: 12px;">
+                Sign In
+            </button>
+        </form>
+
+        <div class="divider">or</div>
+
+        <!-- Demo Account -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1rem 1.1rem; text-align: center; margin-bottom: 1.5rem;">
+            <div style="font-size: 0.7rem; color: #64748b; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--font-display);">Quick Evaluation Access</div>
+            <button type="button" onclick="fillDemoCredentials()" class="demo-btn">
+                Autofill Demo Account Credentials
+            </button>
+            <div style="font-size: 0.68rem; color: #64748b; margin-top: 0.5rem;">demo@payline.com / password123</div>
+        </div>
+
+        <div style="text-align: center; font-size: 0.82rem; color: #64748b;">
+            No account yet?
+            <a href="/signup" style="color: #4f46e5; font-weight: 700; text-decoration: none; margin-left: 0.25rem; letter-spacing: -0.01em;">Create Account</a>
+        </div>
+    </div>
+
+    <!-- Trust signals -->
+    <div style="display: flex; justify-content: center; gap: 1.5rem; margin-top: 1.5rem;">
+        <div style="text-align: center;">
+            <div style="font-size: 0.65rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">On-Device Processing</div>
+        </div>
+        <div style="width: 1px; height: 24px; background: #e2e8f0;"></div>
+        <div style="text-align: center;">
+            <div style="font-size: 0.65rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Zero Data Leakage</div>
+        </div>
+        <div style="width: 1px; height: 24px; background: #e2e8f0;"></div>
+        <div style="text-align: center;">
+            <div style="font-size: 0.65rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Encrypted Vault</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function fillDemoCredentials() {
+    document.getElementById('email').value = 'demo@payline.com';
+    document.getElementById('password').value = 'password123';
+    document.getElementById('email').dispatchEvent(new Event('input'));
+    document.getElementById('password').dispatchEvent(new Event('input'));
+}
+</script>
+{% endblock %}

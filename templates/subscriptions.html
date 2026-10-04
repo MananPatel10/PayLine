@@ -1,0 +1,680 @@
+{% extends "base.html" %}
+
+{% block title %}Payline | Recurring Subscriptions & Silent Cash Leakage Guard{% endblock %}
+
+{% block head %}
+<style>
+/* ─── Subscriptions Modern UI Styles (Matching Reference Design) ───────────── */
+.dash-grid-top {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+@media (max-width: 1024px) {
+    .dash-grid-top { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+    .dash-grid-top { grid-template-columns: 1fr; }
+}
+
+.kpi-modern-card {
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: var(--radius-card);
+    padding: 1.4rem 1.4rem 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.kpi-modern-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+}
+
+.kpi-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.6rem;
+}
+.kpi-title-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 0.2rem;
+}
+.kpi-big-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+}
+
+.mini-bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 42px;
+    margin-top: 0.85rem;
+    padding-top: 0.4rem;
+    position: relative;
+}
+.mini-bar {
+    flex: 1;
+    background: #e2e8f0;
+    border-radius: 4px;
+    transition: height 0.5s ease;
+}
+.mini-bar.active { background: #152228; }
+
+.switch-label {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    margin: 0;
+}
+.switch-label input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: .25s;
+    border-radius: 24px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .25s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+input:checked + .slider {
+    background-color: #10b981;
+}
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+.creep-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.mandate-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    color: #4338ca;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+}
+
+.vault-projection-card {
+    background: linear-gradient(135deg, #152228 0%, #0d161a 100%);
+    border-radius: var(--radius-inner);
+    padding: 1.5rem 1.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    color: #ffffff;
+    box-shadow: 0 12px 30px rgba(15,23,42,0.15);
+}
+
+.prune-card-item {
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 16px;
+    padding: 1rem 1.15rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.prune-card-item:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.75rem;">
+    <div>
+        <div class="page-tag" style="color: #6366f1; font-weight: 800; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.08em; margin-bottom: 0.25rem;">
+            Silent Cash Leakage | Cadence Guard
+        </div>
+        <h1 class="page-title" style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.04em; color: #0f172a; margin-bottom: 0.35rem;">
+            Subscriptions &amp; Leakage Guard
+        </h1>
+        <p class="page-desc" style="font-size: 0.9rem; color: #64748b; line-height: 1.5;">
+            Algorithmic cadence telemetry detecting automated recurrent debits, price creep hikes, and silent cash drains. Prune discretionary subscriptions in 1-click and project 5-year wealth compounding in the Tri-Asset Engine.
+        </p>
+    </div>
+    <div style="display: flex; gap: 0.65rem; align-items: center; flex-wrap: wrap;">
+        <span class="dropdown-pill">
+            <span>{{ subs.total_count }} Subscriptions Active</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </span>
+        <a href="/invest" class="btn btn-outline" style="font-size: 0.82rem; padding: 0.5rem 1.1rem;">
+            Micro-Investing Hub
+        </a>
+        <a href="/dashboard" class="btn btn-lime" style="font-size: 0.82rem; padding: 0.5rem 1.1rem; background: #d4f938; color: #0f172a; font-weight: 800;">
+            Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- 4 EXECUTIVE TELEMETRY KPI CARDS (Matching Reference Header Row) -->
+<div class="dash-grid-top">
+    <!-- Card 1: Total Monthly Recurring Burn -->
+    <div class="kpi-modern-card">
+        <div>
+            <div class="kpi-top-row">
+                <div>
+                    <div class="kpi-title-label">Total Monthly Recurring Burn</div>
+                    <div class="kpi-big-value num-mono">
+                        ₹{{ "{:,.2f}".format(subs.total_monthly_burn) }}
+                    </div>
+                </div>
+                <div class="icon-box icon-box-purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+            </div>
+            <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">
+                Across {{ subs.total_count }} recurring debits (utilities, loans &amp; OTT)
+            </div>
+        </div>
+        <div class="mini-bar-chart">
+            <div class="mini-bar" style="height: 45%;"></div>
+            <div class="mini-bar" style="height: 60%;"></div>
+            <div class="mini-bar active" style="height: 85%;"></div>
+            <div class="mini-bar" style="height: 70%;"></div>
+            <div class="mini-bar" style="height: 50%;"></div>
+        </div>
+    </div>
+
+    <!-- Card 2: Discretionary Cash Leakage -->
+    <div class="kpi-modern-card">
+        <div>
+            <div class="kpi-top-row">
+                <div>
+                    <div class="kpi-title-label">Discretionary Cash Leakage</div>
+                    <div class="kpi-big-value num-mono" style="color: #dc2626;">
+                        ₹{{ "{:,.2f}".format(subs.discretionary_monthly_burn) }}
+                    </div>
+                </div>
+                <div class="icon-box icon-box-pink">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"/></svg>
+                </div>
+            </div>
+            <div style="font-size: 0.72rem; color: #dc2626; font-weight: 700;">
+                {{ subs.prunable_count }} prunable discretionary subscriptions
+            </div>
+        </div>
+        <div class="mini-bar-chart">
+            <div class="mini-bar" style="height: 35%;"></div>
+            <div class="mini-bar" style="height: 55%;"></div>
+            <div class="mini-bar active" style="height: 75%; background: #dc2626;"></div>
+            <div class="mini-bar" style="height: 40%;"></div>
+            <div class="mini-bar" style="height: 30%;"></div>
+        </div>
+    </div>
+
+    <!-- Card 3: Annualized Leakage Run-Rate -->
+    <div class="kpi-modern-card">
+        <div>
+            <div class="kpi-top-row">
+                <div>
+                    <div class="kpi-title-label">Annualized Leakage Run-Rate</div>
+                    <div class="kpi-big-value num-mono" style="color: #d97706;">
+                        ₹{{ "{:,.2f}".format(subs.annual_leakage) }}
+                    </div>
+                </div>
+                <div class="icon-box icon-box-amber">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+            </div>
+            <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">
+                Projected 12-month drain without pruning
+            </div>
+        </div>
+        <div class="mini-bar-chart">
+            <div class="mini-bar" style="height: 40%;"></div>
+            <div class="mini-bar" style="height: 65%;"></div>
+            <div class="mini-bar" style="height: 50%;"></div>
+            <div class="mini-bar active" style="height: 80%;"></div>
+            <div class="mini-bar" style="height: 60%;"></div>
+        </div>
+    </div>
+
+    <!-- Card 4: 5-Yr Tri-Asset Compounded Gain -->
+    <div class="kpi-modern-card">
+        <div>
+            <div class="kpi-top-row">
+                <div>
+                    <div class="kpi-title-label">5-Yr Tri-Asset Compounded Gain</div>
+                    <div class="kpi-big-value num-mono" style="color: #059669;" id="kpi-compounded-val">
+                        ₹{{ "{:,.2f}".format(subs.compounded_5yr_wealth) }}
+                    </div>
+                </div>
+                <div class="icon-box icon-box-green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                </div>
+            </div>
+            <div style="font-size: 0.72rem; color: #059669; font-weight: 700;">
+                At 12% CAGR in Micro-Investing Engine
+            </div>
+        </div>
+        <div class="mini-bar-chart">
+            <div class="mini-bar" style="height: 25%;"></div>
+            <div class="mini-bar" style="height: 45%;"></div>
+            <div class="mini-bar" style="height: 70%;"></div>
+            <div class="mini-bar active" style="height: 95%; background: #10b981;"></div>
+            <div class="mini-bar" style="height: 80%;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- INTERACTIVE 1-CLICK LEAKAGE PRUNING SIMULATOR -->
+<div class="card">
+    <div class="card-header">
+        <div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">Interactive Leakage Pruning Simulator</h3>
+            <div style="font-size: 0.78rem; color: #64748b;">Toggle discretionary services to model instant cash retention and real-time 5-year wealth compounding</div>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <button type="button" onclick="selectAllPrunable(true)" class="btn btn-outline" style="font-size: 0.75rem; padding: 0.35rem 0.85rem;">
+                Prune All Discretionary
+            </button>
+            <button type="button" onclick="selectAllPrunable(false)" class="btn btn-outline" style="font-size: 0.75rem; padding: 0.35rem 0.85rem;">
+                Reset All
+            </button>
+        </div>
+    </div>
+
+    <!-- Projected Wealth Vault Banner (styled with dark slate & neon lime like reference card) -->
+    <div class="vault-projection-card" style="margin-bottom: 1.5rem;">
+        <div>
+            <div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #d4f938; margin-bottom: 0.35rem; font-family: var(--font-display);">
+                Simulated Micro-Wealth Vault
+            </div>
+            <div style="display: flex; align-items: baseline; gap: 0.85rem;">
+                <div style="font-size: 2.2rem; font-weight: 900; color: #ffffff;" class="num-mono" id="sim-monthly-saved">
+                    ₹{{ "{:,.2f}".format(subs.discretionary_monthly_burn) }}
+                </div>
+                <div style="font-size: 0.88rem; color: #d4f938; font-weight: 700;">
+                    recovered per month (<span id="sim-annual-saved">₹{{ "{:,.2f}".format(subs.annual_leakage) }}</span>/year)
+                </div>
+            </div>
+            <div style="font-size: 0.82rem; color: #cbd5e1; margin-top: 0.25rem;">
+                Pruning <strong id="sim-pruned-count" style="color: #ffffff;">{{ subs.prunable_count }}</strong> services accumulates <strong style="color: #d4f938;" id="sim-5yr-val">₹{{ "{:,.2f}".format(subs.compounded_5yr_wealth) }}</strong> in 5 years at 12% CAGR.
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <a href="/invest" class="btn btn-lime" style="padding: 0.75rem 1.4rem; font-size: 0.88rem; background: #d4f938; color: #0f172a; font-weight: 800;">
+                Deploy Recovered Savings
+            </a>
+        </div>
+    </div>
+
+    <!-- Progress Comparison Bar -->
+    <div style="margin-bottom: 1.5rem; background: #f8fafc; border: 1px solid #edf2f7; border-radius: var(--radius-inner); padding: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-size: 0.82rem;">
+            <span style="font-weight: 700; color: #0f172a;">Leakage Reduction Progress</span>
+            <span style="font-weight: 700; color: #059669;" id="sim-pct-text">100% Discretionary Pruned</span>
+        </div>
+        <div style="background: #e2e8f0; height: 8px; border-radius: 9999px; overflow: hidden;">
+            <div id="sim-progress-bar" style="background: linear-gradient(90deg, #10b981, #059669); height: 100%; width: 100%; transition: width 0.3s ease;"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: #64748b; margin-top: 0.4rem;">
+            <span>Current Discretionary Burn: ₹{{ "{:,.2f}".format(subs.discretionary_monthly_burn) }}/mo</span>
+            <span>Optimized Residual Burn: <strong id="sim-residual-burn" class="num-mono" style="color: #0f172a;">₹0.00/mo</strong></span>
+        </div>
+    </div>
+
+    <!-- Discretionary Toggles Grid (Matching Recent Activity style) -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+        {% for s in subs.subscriptions %}
+        {% if s.is_discretionary %}
+        <div class="prune-card-item">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="icon-box {% if 'netflix' in s.id %}icon-box-purple{% elif 'prime' in s.id %}icon-box-blue{% elif 'hotstar' in s.id %}icon-box-amber{% elif 'cult' in s.id %}icon-box-green{% elif 'swiggy' in s.id or 'zomato' in s.id %}icon-box-pink{% else %}icon-box-purple{% endif %}">
+                    {% if 'netflix' in s.id or 'hotstar' in s.id %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    {% elif 'cult' in s.id %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    {% elif 'swiggy' in s.id or 'zomato' in s.id %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+                    {% else %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                    {% endif %}
+                </div>
+                <div>
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                        <strong style="color: #0f172a; font-size: 0.88rem;">{{ s.name }}</strong>
+                        {% if s.price_creep %}
+                        <span class="creep-tag">Hike</span>
+                        {% endif %}
+                    </div>
+                    <div style="font-size: 0.72rem; color: #64748b;">
+                        {{ s.category }} | {{ s.cadence }}
+                    </div>
+                    <div style="font-size: 0.88rem; font-weight: 800; color: #0f172a; margin-top: 0.2rem;" class="num-mono">
+                        ₹{{ "{:,.2f}".format(s.monthly_cost) }}/mo
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem;">
+                <label class="switch-label">
+                    <input type="checkbox" class="sub-prune-toggle" data-id="{{ s.id }}" data-cost="{{ s.monthly_cost }}" checked onchange="updateSimulation()">
+                    <span class="slider"></span>
+                </label>
+                <span style="font-size: 0.65rem; font-weight: 800; color: #059669;" id="toggle-state-{{ s.id }}">PRUNED</span>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<!-- COMPLETE RECURRING TELEMETRY LEDGER -->
+<div class="card">
+    <div class="card-header">
+        <div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">Recurring Debits &amp; Subscription Inventory</h3>
+            <div style="font-size: 0.78rem; color: #64748b;">Every automated cadence identified from your transaction stream with NPCI mandate revocation instructions</div>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <select id="filter-type" onchange="filterSubsTable()" class="ledger-search-input" style="padding: 0.4rem 0.8rem; font-size: 0.78rem; border-radius: 9999px;">
+                <option value="ALL">All Recurring Debits</option>
+                <option value="DISCRETIONARY">Discretionary (Prunable Leakage)</option>
+                <option value="ESSENTIAL">Essential (Utilities &amp; Debt)</option>
+            </select>
+        </div>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="clean-table" id="subs-table">
+            <thead>
+                <tr>
+                    <th>Service &amp; Counterparty</th>
+                    <th>Category</th>
+                    <th>Cadence</th>
+                    <th>Classification</th>
+                    <th>Mandate Rail</th>
+                    <th style="text-align: right;">Monthly Burn</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in subs.subscriptions %}
+                <tr class="sub-row" data-disc="{{ 'true' if s.is_discretionary else 'false' }}">
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.65rem;">
+                            <div class="icon-box {% if s.is_discretionary %}icon-box-purple{% else %}icon-box-blue{% endif %}" style="width: 32px; height: 32px; border-radius: 8px;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; color: #0f172a; font-size: 0.88rem;">{{ s.name }}</div>
+                                <div style="font-size: 0.7rem; color: #64748b;">
+                                    Last observed: {{ s.last_date }} | {{ s.occurrences }} cycle(s) detected
+                                </div>
+                                {% if s.price_creep %}
+                                <div style="margin-top: 0.2rem;">
+                                    <span class="creep-tag">{{ s.price_creep }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span style="font-size: 0.8rem; color: #475569;">{{ s.category }}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-neutral">{{ s.cadence }}</span>
+                    </td>
+                    <td>
+                        {% if s.is_discretionary %}
+                        <span class="badge badge-warning">Discretionary Leakage</span>
+                        {% else %}
+                        <span class="badge badge-credit">Essential Obligation</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="mandate-pill">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            {{ s.mandate_type }}
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        <div style="font-weight: 800; color: #0f172a; font-size: 0.92rem;" class="num-mono">
+                            ₹{{ "{:,.2f}".format(s.monthly_cost) }}
+                        </div>
+                        <div style="font-size: 0.7rem; color: #64748b;" class="num-mono">
+                            ₹{{ "{:,.2f}".format(s.annual_cost) }}/yr
+                        </div>
+                    </td>
+                    <td style="text-align: right;">
+                        <button type="button" onclick="openCancellationModal('{{ s.name|escape }}', '{{ s.cancel_merchant|escape }}', '{{ s.cancel_mandate|escape }}', '{{ s.mandate_type|escape }}', '{{ s.monthly_cost }}')" class="btn btn-outline" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
+                            Revoke / Cancel
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- MANDATE REVOCATION & CANCELLATION DIRECTIVE MODAL -->
+<div class="modal-overlay" id="cancel-directive-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
+    <div class="modal-box" style="max-width: 580px; width: 100%; background: #ffffff; border: 1px solid #edf2f7; border-radius: 20px; padding: 1.75rem; box-shadow: 0 25px 60px rgba(0,0,0,0.18);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid #edf2f7; padding-bottom: 0.75rem;">
+            <div>
+                <div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: #dc2626; letter-spacing: 0.06em;">Mandate Cancellation Directive</div>
+                <h3 style="font-size: 1.2rem; font-weight: 800; color: #0f172a;" id="modal-sub-name">Subscription Cancellation</h3>
+            </div>
+            <button type="button" onclick="closeCancellationModal()" style="background: none; border: none; font-size: 1.2rem; font-weight: 700; color: #64748b; cursor: pointer;">X</button>
+        </div>
+
+        <!-- Step 1: Merchant Cancellation -->
+        <div style="background: #f8fafc; border: 1px solid #edf2f7; border-radius: 12px; padding: 1rem 1.15rem; margin-bottom: 1rem;">
+            <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #0f172a; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.4rem;">
+                <span style="width: 18px; height: 18px; border-radius: 50%; background: #0f172a; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; font-size: 0.65rem;">1</span>
+                Step 1: Cancel at Merchant
+            </div>
+            <p style="font-size: 0.84rem; color: #475569; line-height: 1.5;" id="modal-merchant-steps">
+                Follow merchant steps.
+            </p>
+        </div>
+
+        <!-- Step 2: NPCI UPI AutoPay / e-Mandate Revocation -->
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 1rem 1.15rem; margin-bottom: 1.25rem;">
+            <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #991b1b; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.4rem;">
+                <span style="width: 18px; height: 18px; border-radius: 50%; background: #dc2626; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; font-size: 0.65rem;">2</span>
+                Step 2: Revoke e-Mandate (Statutory Protection)
+            </div>
+            <p style="font-size: 0.84rem; color: #7f1d1d; line-height: 1.5;" id="modal-mandate-steps">
+                Revoke mandate in UPI app.
+            </p>
+        </div>
+
+        <!-- Statutory Notice -->
+        <div style="font-size: 0.72rem; color: #64748b; line-height: 1.45; margin-bottom: 1.25rem;">
+            <strong>RBI Statutory Right:</strong> Under RBI Circular <em>RBI/2020-21/74</em> on e-Mandates, Indian banking customers have the statutory right to revoke any recurring debit authorization anytime directly from their UPI or banking application without merchant consent.
+        </div>
+
+        <div style="display: flex; gap: 0.75rem;">
+            <button type="button" onclick="copyCancellationTemplate()" class="btn btn-outline" style="flex: 1; padding: 0.65rem;">
+                Copy Notice Template
+            </button>
+            <button type="button" onclick="closeCancellationModal()" class="btn btn-lime" style="padding: 0.65rem 1.5rem; background: #d4f938; color: #0f172a; font-weight: 800;">
+                Done
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const baseDiscretionaryBurn = {{ subs.discretionary_monthly_burn }};
+let activePrunedSubs = new Set();
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.sub-prune-toggle').forEach(chk => {
+        if (chk.checked) {
+            activePrunedSubs.add(chk.getAttribute('data-id'));
+        }
+    });
+    updateSimulation();
+});
+
+function updateSimulation() {
+    let recoveredMonthly = 0;
+    let prunedCount = 0;
+
+    document.querySelectorAll('.sub-prune-toggle').forEach(chk => {
+        const id = chk.getAttribute('data-id');
+        const cost = parseFloat(chk.getAttribute('data-cost')) || 0;
+        const stateLabel = document.getElementById('toggle-state-' + id);
+
+        if (chk.checked) {
+            recoveredMonthly += cost;
+            prunedCount++;
+            activePrunedSubs.add(id);
+            if (stateLabel) {
+                stateLabel.textContent = 'PRUNED';
+                stateLabel.style.color = '#059669';
+            }
+        } else {
+            activePrunedSubs.delete(id);
+            if (stateLabel) {
+                stateLabel.textContent = 'ACTIVE';
+                stateLabel.style.color = '#dc2626';
+            }
+        }
+    });
+
+    const recoveredAnnual = recoveredMonthly * 12;
+    
+    // 5-Year Compounding at 12% CAGR
+    const r = 0.12 / 12;
+    const n = 60;
+    let compounded5yr = 0;
+    if (recoveredMonthly > 0) {
+        const factor = (((Math.pow(1 + r, n) - 1) / r) * (1 + r));
+        compounded5yr = recoveredMonthly * factor;
+    }
+
+    const residual = Math.max(0, baseDiscretionaryBurn - recoveredMonthly);
+    const reductionPct = baseDiscretionaryBurn > 0 ? Math.round((recoveredMonthly / baseDiscretionaryBurn) * 100) : 100;
+
+    const monthlyElem = document.getElementById('sim-monthly-saved');
+    if (monthlyElem) monthlyElem.textContent = '₹' + recoveredMonthly.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+    const annualElem = document.getElementById('sim-annual-saved');
+    if (annualElem) annualElem.textContent = '₹' + recoveredAnnual.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+    const fiveYrElem = document.getElementById('sim-5yr-val');
+    if (fiveYrElem) fiveYrElem.textContent = '₹' + compounded5yr.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+    const kpi5yr = document.getElementById('kpi-compounded-val');
+    if (kpi5yr) kpi5yr.textContent = '₹' + compounded5yr.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+    const countElem = document.getElementById('sim-pruned-count');
+    if (countElem) countElem.textContent = prunedCount;
+
+    const residualElem = document.getElementById('sim-residual-burn');
+    if (residualElem) residualElem.textContent = '₹' + residual.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '/mo';
+
+    const progressBar = document.getElementById('sim-progress-bar');
+    if (progressBar) progressBar.style.width = reductionPct + '%';
+
+    const pctText = document.getElementById('sim-pct-text');
+    if (pctText) pctText.textContent = reductionPct + '% Discretionary Pruned';
+}
+
+function selectAllPrunable(prune) {
+    document.querySelectorAll('.sub-prune-toggle').forEach(chk => {
+        chk.checked = prune;
+    });
+    updateSimulation();
+}
+
+function filterSubsTable() {
+    const filter = document.getElementById('filter-type').value;
+    const rows = document.querySelectorAll('.sub-row');
+
+    rows.forEach(row => {
+        const isDisc = row.getAttribute('data-disc') === 'true';
+        if (filter === 'ALL') {
+            row.style.display = '';
+        } else if (filter === 'DISCRETIONARY') {
+            row.style.display = isDisc ? '' : 'none';
+        } else if (filter === 'ESSENTIAL') {
+            row.style.display = !isDisc ? '' : 'none';
+        }
+    });
+}
+
+let currentCancelService = '';
+
+function openCancellationModal(name, merchantSteps, mandateSteps, rail, cost) {
+    currentCancelService = name;
+    document.getElementById('modal-sub-name').textContent = name + ' (₹' + Number(cost).toFixed(2) + '/mo)';
+    document.getElementById('modal-merchant-steps').textContent = merchantSteps;
+    document.getElementById('modal-mandate-steps').textContent = mandateSteps;
+    const modal = document.getElementById('cancel-directive-modal');
+    modal.style.display = 'flex';
+}
+
+function closeCancellationModal() {
+    document.getElementById('cancel-directive-modal').style.display = 'none';
+}
+
+function copyCancellationTemplate() {
+    const text = `To: Support / Billing Team\nSubject: Cancellation of ${currentCancelService} Subscription and e-Mandate Revocation\n\nDear Support Team,\n\nPlease terminate my subscription for ${currentCancelService} immediately and cancel all recurring authorizations. I have also initiated the statutory e-Mandate revocation via my banking UPI rail pursuant to RBI guidelines.\n\nThank you.`;
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Cancellation notice template copied to clipboard!');
+    }).catch(() => {
+        prompt('Copy your cancellation template:', text);
+    });
+}
+</script>
+{% endblock %}

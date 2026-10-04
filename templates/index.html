@@ -1,0 +1,608 @@
+{% extends "base.html" %}
+
+{% block title %}Payline — Enterprise Financial Intelligence & Wealth Engine{% endblock %}
+
+{% block head %}
+<style>
+/* Capabilities Section Wrapper with Soft Ambient Glow */
+.capabilities-wrapper {
+    position: relative;
+    border-radius: 32px;
+    padding: 3rem 2.25rem 3.5rem;
+    margin-bottom: 4.5rem;
+    overflow: hidden;
+    background: linear-gradient(180deg, #f8fafc 0%, #edf2f7 100%);
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
+}
+
+.capabilities-header {
+    position: relative;
+    z-index: 2;
+    text-align: left;
+    margin-bottom: 2.25rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 1.25rem;
+}
+
+.capabilities-grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+    gap: 1.75rem;
+}
+
+.cap-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 2.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: #0f172a;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cap-card:hover {
+    transform: translateY(-4px);
+    border-color: #cbd5e1;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
+}
+
+.hero-mockup-frame {
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+
+.hero-mockup-frame:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.12);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Explanatory Hero -->
+<div style="max-width: 960px; margin: 1rem auto 2.5rem; text-align: center;">
+    <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: #f1f5f9; padding: 0.35rem 0.95rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 800; color: var(--accent-purple); margin-bottom: 1.25rem; border: 1px solid var(--border-subtle); text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--font-display);">
+        Simple &bull; Secure &bull; Institutional Wealth Engine
+    </div>
+    
+    <h1 style="font-family: var(--font-display); font-size: clamp(2.4rem, 4.5vw, 3.7rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; color: var(--text-primary); margin-bottom: 1.25rem;">
+        Intelligent Financial Operations &amp; Algorithmic Wealth Automation
+    </h1>
+    
+    <p style="font-size: 1.15rem; color: var(--text-secondary); max-width: 760px; margin: 0 auto 2.25rem; line-height: 1.6; letter-spacing: -0.01em;">
+        Payline transforms confusing bank statements into crystal-clear financial health, automated spare-change investing, silent leakage protection, and honest AI money counsel.
+    </p>
+
+    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 2.5rem;">
+        <a href="/upload" class="btn btn-primary" style="padding: 0.75rem 1.6rem; font-size: 0.92rem;">Upload Statement</a>
+        <a href="/dashboard" class="btn btn-outline" style="padding: 0.75rem 1.6rem; font-size: 0.92rem;">Open Dashboard</a>
+        <a href="/subscriptions" class="btn btn-outline" style="padding: 0.75rem 1.6rem; font-size: 0.92rem;">Subscriptions &amp; Leakage</a>
+        <a href="/invest" class="btn btn-outline" style="padding: 0.75rem 1.6rem; font-size: 0.92rem;">Micro-Investing</a>
+        <a href="/tax" class="btn btn-outline" style="padding: 0.75rem 1.6rem; font-size: 0.92rem;">Tax Optimization</a>
+        <a href="/advisor" class="btn btn-outline" style="padding: 0.75rem 1.6rem; font-size: 0.92rem;">Gemini AI Advisor</a>
+    </div>
+</div>
+
+<!-- Main Headline Device Mockup Stage -->
+<div style="max-width: 1040px; margin: 0 auto 4.5rem; text-align: center; position: relative;">
+    <div class="hero-mockup-frame">
+        <img src="/static/images/device_mockup.png" alt="Payline Financial Intelligence Platform Dashboard Interface" style="width: 100%; height: auto; display: block; border-radius: 22px;">
+    </div>
+</div>
+
+<!-- Capabilities Section with Crisp White Cards -->
+<div class="capabilities-wrapper">
+    <div class="capabilities-header">
+        <h2 style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em; color: #0f172a; margin-bottom: 0.35rem;">
+            Explore System Capabilities &amp; Interactive Demos
+        </h2>
+        <p style="font-size: 0.92rem; color: #64748b; letter-spacing: -0.01em;">
+            Test each core capability interactively below to see how Payline simplifies personal and enterprise finance.
+        </p>
+    </div>
+
+    <div class="capabilities-grid">
+        
+        <!-- ================================================================= -->
+        <!-- Feature 1: Statement Intake -->
+        <!-- ================================================================= -->
+        <div class="cap-card">
+            <div>
+                <div style="margin-bottom: 0.85rem;">
+                    <span style="font-size: 0.72rem; color: #4d7c0f; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(132,204,22,0.15); padding: 0.2rem 0.55rem; border-radius: 6px; border: 1px solid #84cc16;">Zero Cloud Leakage</span>
+                </div>
+                
+                <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.65rem; color: #0f172a; letter-spacing: -0.3px;">
+                    Automatic Bank Statement Sorter
+                </h3>
+                
+                <p style="font-size: 0.9rem; color: #475569; line-height: 1.6; margin-bottom: 1.5rem;">
+                    Drop your monthly bank CSV (from SBI, HDFC, ICICI, etc.). In under 1 second, our computer automatically reads every transaction and neatly labels your grocery, petrol, and electricity expenses without any manual effort.
+                </p>
+
+                <!-- Interactive Visual: Statement Row Classifier -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;">
+                        <span style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Interactive Statement Preview</span>
+                        <span style="font-size: 0.72rem; color: #4d7c0f; font-weight: 700;">Tap any row to sort</span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.65rem;" id="statement-interactive-list">
+                        <!-- Row 1 -->
+                        <div onclick="selectTxnRow(1)" id="txn-row-1" style="background: rgba(132, 204, 22, 0.12); border: 1px solid #84cc16; border-radius: 8px; padding: 0.65rem 0.85rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;">
+                            <div>
+                                <div style="font-size: 0.84rem; font-weight: 700; color: #0f172a;">UPI / SWIGGY BANGALORE</div>
+                                <div style="font-size: 0.72rem; color: #64748b;">Card Debit &bull; Yesterday</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.88rem; font-weight: 800; color: #0f172a;" class="num-mono">-INR 420.00</div>
+                                <div id="txn-tag-1" style="font-size: 0.68rem; font-weight: 700; color: #4d7c0f;">Auto-Tagged: Food &amp; Dining</div>
+                            </div>
+                        </div>
+
+                        <!-- Row 2 -->
+                        <div onclick="selectTxnRow(2)" id="txn-row-2" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.65rem 0.85rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;">
+                            <div>
+                                <div style="font-size: 0.84rem; font-weight: 700; color: #334155;">BESCOM ELECTRICITY BILL</div>
+                                <div style="font-size: 0.72rem; color: #64748b;">NetBanking &bull; 02 Oct</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.88rem; font-weight: 800; color: #0f172a;" class="num-mono">-INR 1,850.00</div>
+                                <div id="txn-tag-2" style="font-size: 0.68rem; font-weight: 700; color: #64748b;">Auto-Tagged: Utilities</div>
+                            </div>
+                        </div>
+
+                        <!-- Row 3 -->
+                        <div onclick="selectTxnRow(3)" id="txn-row-3" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.65rem 0.85rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;">
+                            <div>
+                                <div style="font-size: 0.84rem; font-weight: 700; color: #334155;">INDIAN OIL CORP PETROL</div>
+                                <div style="font-size: 0.72rem; color: #64748b;">POS Terminal &bull; 29 Sep</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.88rem; font-weight: 800; color: #0f172a;" class="num-mono">-INR 600.00</div>
+                                <div id="txn-tag-3" style="font-size: 0.68rem; font-weight: 700; color: #64748b;">Auto-Tagged: Fuel &amp; Transport</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 0.75rem; font-size: 0.74rem; color: #64748b; text-align: center;">
+                        Processed 100% on your device &bull; Zero banking passwords required
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <a href="/upload" class="btn btn-lime" style="width: 100%; padding: 0.75rem; font-weight: 700;">
+                    Open Statement Intake &rarr;
+                </a>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- Feature 2: 50/30/20 & Anomaly Defense -->
+        <!-- ================================================================= -->
+        <div class="cap-card">
+            <div>
+                <div style="margin-bottom: 0.85rem;">
+                    <span style="font-size: 0.72rem; color: #6366f1; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(99,102,241,0.1); padding: 0.2rem 0.55rem; border-radius: 6px; border: 1px solid rgba(99,102,241,0.25);">Family Financial Health</span>
+                </div>
+                
+                <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.65rem; color: #0f172a; letter-spacing: -0.3px;">
+                    The 50/30/20 Rule &amp; Bill Overcharge Alerts
+                </h3>
+                
+                <p style="font-size: 0.9rem; color: #475569; line-height: 1.6; margin-bottom: 1.5rem;">
+                    The proven formula for financial peace: 50% for family essentials, 30% for lifestyle, and 20% safe savings. Plus, our automatic watchdog alerts you if a vendor charges you twice or spikes a bill.
+                </p>
+
+                <!-- Interactive Visual: 50/30/20 Budget Bar & Salary Switcher -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+                        <span style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Select Monthly Income</span>
+                        <div style="display: flex; gap: 0.35rem;">
+                            <button type="button" onclick="setBudgetDemo(50000)" id="btn-inc-50" style="background: #ffffff; border: 1px solid #cbd5e1; color: #475569; font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 6px; cursor: pointer;">50k</button>
+                            <button type="button" onclick="setBudgetDemo(100000)" id="btn-inc-100" style="background: var(--accent-lime); border: 1px solid #84cc16; color: #090a0f; font-weight: 700; font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 6px; cursor: pointer;">100k</button>
+                            <button type="button" onclick="setBudgetDemo(200000)" id="btn-inc-200" style="background: #ffffff; border: 1px solid #cbd5e1; color: #475569; font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 6px; cursor: pointer;">200k</button>
+                        </div>
+                    </div>
+
+                    <!-- Visual Segmented Bar -->
+                    <div style="height: 10px; width: 100%; border-radius: 9999px; overflow: hidden; display: flex; margin-bottom: 1rem;">
+                        <div style="background: #10b981; width: 50%;" title="50% Needs"></div>
+                        <div style="background: #f59e0b; width: 30%;" title="30% Wants"></div>
+                        <div style="background: #8b5cf6; width: 20%;" title="20% Savings"></div>
+                    </div>
+
+                    <!-- Split Breakdown Numbers -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; text-align: center; margin-bottom: 1rem;">
+                        <div style="background: #ffffff; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.5rem;">
+                            <div style="font-size: 0.68rem; color: #059669; font-weight: 700;">NEEDS (50%)</div>
+                            <div id="disp-needs" style="font-size: 0.95rem; font-weight: 800; color: #0f172a;" class="num-mono">INR 50,000</div>
+                            <div style="font-size: 0.65rem; color: #64748b;">Rent &bull; Rations</div>
+                        </div>
+                        <div style="background: #ffffff; border: 1px solid #fde68a; border-radius: 8px; padding: 0.5rem;">
+                            <div style="font-size: 0.68rem; color: #d97706; font-weight: 700;">WANTS (30%)</div>
+                            <div id="disp-wants" style="font-size: 0.95rem; font-weight: 800; color: #0f172a;" class="num-mono">INR 30,000</div>
+                            <div style="font-size: 0.65rem; color: #64748b;">Dining &bull; Gifts</div>
+                        </div>
+                        <div style="background: #ffffff; border: 1px solid #ddd6fe; border-radius: 8px; padding: 0.5rem;">
+                            <div style="font-size: 0.68rem; color: #7c3aed; font-weight: 700;">SAVINGS (20%)</div>
+                            <div id="disp-savings" style="font-size: 0.95rem; font-weight: 800; color: #0f172a;" class="num-mono">INR 20,000</div>
+                            <div style="font-size: 0.65rem; color: #64748b;">Safe Future</div>
+                        </div>
+                    </div>
+
+                    <!-- Overcharge Alert Badge -->
+                    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 0.55rem 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.75rem; color: #991b1b; font-weight: 600;">Double-charge watchdog alert:</span>
+                        <span style="font-size: 0.75rem; color: #dc2626; font-weight: 800;">Flagged INR 499 duplicate</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <a href="/dashboard" class="btn btn-lime" style="width: 100%; padding: 0.75rem; font-weight: 700;">
+                    Launch Analytics Dashboard &rarr;
+                </a>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- Feature 3: Micro-Investment Engine -->
+        <!-- ================================================================= -->
+        <div class="cap-card">
+            <div>
+                <div style="margin-bottom: 0.85rem;">
+                    <span style="font-size: 0.72rem; color: #0284c7; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(56,189,248,0.12); padding: 0.2rem 0.55rem; border-radius: 6px; border: 1px solid rgba(56,189,248,0.3);">Effortless Compounding</span>
+                </div>
+                
+                <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.65rem; color: #0f172a; letter-spacing: -0.3px;">
+                    Spare-Change Piggy Bank into Real Gold &amp; Stocks
+                </h3>
+                
+                <p style="font-size: 0.9rem; color: #475569; line-height: 1.6; margin-bottom: 1.5rem;">
+                    Every time you buy a tea, groceries, or petrol, we round up the bill to the nearest ₹50. The spare change is automatically saved and invested into pure 24K Gold and the Nifty 50 index without pinching your monthly cashflow.
+                </p>
+
+                <!-- Interactive Visual: Spare-Change Round-Up Simulator -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+                        <span style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Live Round-Up Simulator</span>
+                        <button type="button" onclick="nextRoundupDemo()" style="background: #ffffff; border: 1px solid #cbd5e1; color: #0f172a; font-size: 0.72rem; font-weight: 700; padding: 0.25rem 0.65rem; border-radius: 6px; cursor: pointer;">
+                            Tap Next Spend &rarr;
+                        </button>
+                    </div>
+
+                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.85rem; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                            <span style="font-size: 0.8rem; color: #334155;" id="demo-txn-name">Morning Chai &amp; Toast</span>
+                            <span style="font-size: 0.75rem; color: #64748b;">Nearest ₹50 Sweep</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                            <div>
+                                <span style="font-size: 0.75rem; color: #64748b;">Original Bill: </span>
+                                <strong style="font-size: 0.95rem; color: #0f172a;" id="demo-txn-bill" class="num-mono">INR 132.00</strong>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.75rem; color: #64748b;">Invested Change: </span>
+                                <strong style="font-size: 1.1rem; color: #15803d;" id="demo-txn-invest" class="num-mono">+INR 18.00</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compounding 5-Year Vault Projection -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 0.65rem 0.85rem;">
+                        <div>
+                            <div style="font-size: 0.7rem; color: #0369a1; font-weight: 700; text-transform: uppercase;">5-Year Compounded Total</div>
+                            <div style="font-size: 0.98rem; font-weight: 800; color: #0f172a;" class="num-mono">INR 1,28,450.00</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.68rem; color: #64748b;">Split Allocation</div>
+                            <div style="font-size: 0.75rem; color: #0284c7; font-weight: 700;">60% Index &bull; 25% Gold</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <a href="/invest" class="btn btn-lime" style="width: 100%; padding: 0.75rem; font-weight: 700;">
+                    Configure Micro-Investing &rarr;
+                </a>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- Feature 4: Gemini AI Money Doctor -->
+        <!-- ================================================================= -->
+        <div class="cap-card">
+            <div>
+                <div style="margin-bottom: 0.85rem;">
+                    <span style="font-size: 0.72rem; color: #ea580c; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(249,115,22,0.1); padding: 0.2rem 0.55rem; border-radius: 6px; border: 1px solid rgba(249,115,22,0.25);">Gemini 3.8 Flash</span>
+                </div>
+                
+                <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.65rem; color: #0f172a; letter-spacing: -0.3px;">
+                    Your Personal 24/7 AI Money Doctor
+                </h3>
+                
+                <p style="font-size: 0.9rem; color: #475569; line-height: 1.6; margin-bottom: 1.5rem;">
+                    Ask any money question in plain, simple English. Gemini reads your actual monthly spending and gives straightforward, institutional financial answers without difficult jargon.
+                </p>
+
+                <!-- Interactive Visual: AI Chat Preview -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1.75rem;">
+                    <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 0.65rem;">
+                        Click a question to test live response:
+                    </div>
+
+                    <!-- Question Buttons -->
+                    <div style="display: flex; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 0.85rem;">
+                        <button type="button" onclick="setAiDemo(1)" id="btn-ai-1" style="background: var(--accent-lime); border: 1px solid #84cc16; color: #090a0f; font-weight: 700; font-size: 0.7rem; padding: 0.25rem 0.6rem; border-radius: 6px; cursor: pointer;">
+                            Can I afford a vacation?
+                        </button>
+                        <button type="button" onclick="setAiDemo(2)" id="btn-ai-2" style="background: #ffffff; border: 1px solid #cbd5e1; color: #475569; font-size: 0.7rem; padding: 0.25rem 0.6rem; border-radius: 6px; cursor: pointer;">
+                            Where is my money leaking?
+                        </button>
+                        <button type="button" onclick="setAiDemo(3)" id="btn-ai-3" style="background: #ffffff; border: 1px solid #cbd5e1; color: #475569; font-size: 0.7rem; padding: 0.25rem 0.6rem; border-radius: 6px; cursor: pointer;">
+                            How much to save monthly?
+                        </button>
+                    </div>
+
+                    <!-- AI Simulated Response Bubble -->
+                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.85rem; font-size: 0.82rem; line-height: 1.5; color: #334155; box-shadow: 0 1px 3px rgba(0,0,0,0.02);" id="ai-demo-response">
+                        <strong style="color: #4d7c0f;">Gemini Advisor:</strong> Yes. Your statement confirms INR 64,467 net monthly surplus after paying rent (INR 60,306) and loans. Allocating INR 25,000 for a holiday leaves a safe 15% reserve cushion.
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <a href="/advisor" class="btn btn-lime" style="width: 100%; padding: 0.75rem; font-weight: 700;">
+                    Consult Gemini Advisor &rarr;
+                </a>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- Feature 5: Automated Tax Optimization Suite -->
+        <!-- ================================================================= -->
+        <div class="cap-card">
+            <div>
+                <div style="margin-bottom: 0.85rem;">
+                    <span style="font-size: 0.72rem; color: #0284c7; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(56,189,248,0.12); padding: 0.2rem 0.55rem; border-radius: 6px; border: 1px solid rgba(56,189,248,0.3);">Finance Act 2024</span>
+                </div>
+                
+                <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.65rem; color: #0f172a; letter-spacing: -0.3px;">
+                    Automated Tax Optimization Engine
+                </h3>
+                
+                <p style="font-size: 0.9rem; color: #475569; line-height: 1.6; margin-bottom: 1.5rem;">
+                    Scans statement debits to harvest tax deductions automatically: computes House Rent Allowance (HRA) exemptions, models Section 80C headroom, and runs live Old vs New Regime arbitrage.
+                </p>
+
+                <!-- Interactive Visual: Tax Arbitrage Preview -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <span style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Regime Arbitrage Verdict</span>
+                        <span style="font-size: 0.72rem; color: #15803d; font-weight: 800;">Optimal Pick</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.85rem;">
+                        <div style="background: #ffffff; border: 1px solid #bae6fd; border-radius: 8px; padding: 0.75rem;">
+                            <div style="font-size: 0.7rem; color: #0284c7; font-weight: 700; text-transform: uppercase;">New Regime (115BAC)</div>
+                            <div style="font-size: 1.15rem; font-weight: 800; color: #0f172a;" class="num-mono">INR 39,859</div>
+                            <div style="font-size: 0.68rem; color: #64748b;">Flat ₹75k Standard Ded</div>
+                        </div>
+
+                        <div style="background: #f7fee7; border: 1px solid #84cc16; border-radius: 8px; padding: 0.75rem;">
+                            <div style="font-size: 0.7rem; color: #4d7c0f; font-weight: 700; text-transform: uppercase;">Old Regime (Optimized)</div>
+                            <div style="font-size: 1.15rem; font-weight: 800; color: #15803d;" class="num-mono">INR 0.00</div>
+                            <div style="font-size: 0.68rem; color: #475569;">HRA + 80C Maximized</div>
+                        </div>
+                    </div>
+
+                    <div style="font-size: 0.78rem; color: #475569; line-height: 1.5;">
+                        Detected <strong style="color: #0f172a;">INR 2,41,224</strong> in annual rent debits. Claiming Section 10(13A) HRA reduces taxable income by <strong style="color: #15803d;">INR 1,91,652</strong>.
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <a href="/tax" class="btn btn-lime" style="width: 100%; padding: 0.75rem; font-weight: 700;">
+                    Explore Tax Suite &rarr;
+                </a>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- Feature 6: Subscription & Silent Leakage Guard -->
+        <!-- ================================================================= -->
+        <div class="cap-card">
+            <div>
+                <div style="margin-bottom: 0.85rem;">
+                    <span style="font-size: 0.72rem; color: #dc2626; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(239,68,68,0.1); padding: 0.2rem 0.55rem; border-radius: 6px; border: 1px solid rgba(239,68,68,0.25);">NEW FEATURE</span>
+                </div>
+                
+                <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.65rem; color: #0f172a; letter-spacing: -0.3px;">
+                    Subscription &amp; Silent Cash Leakage Guard
+                </h3>
+                
+                <p style="font-size: 0.9rem; color: #475569; line-height: 1.6; margin-bottom: 1.5rem;">
+                    Automatically scans periodic debits for forgotten OTT, gym, broadband, and cloud subscriptions. Uncover silent price creeps, annual cash burns, and calculate 5-year wealth lost to ghost memberships.
+                </p>
+
+                <!-- Interactive Visual: Subscription Guard Preview -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <span style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Recurring Outflow Audit</span>
+                        <span style="font-size: 0.72rem; color: #dc2626; font-weight: 800;">7 Active Subscriptions</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.85rem;">
+                        <div style="background: #ffffff; border: 1px solid #fecaca; border-radius: 8px; padding: 0.75rem;">
+                            <div style="font-size: 0.7rem; color: #dc2626; font-weight: 700; text-transform: uppercase;">Monthly Recurring Burn</div>
+                            <div style="font-size: 1.15rem; font-weight: 800; color: #0f172a;" class="num-mono">₹4,238/mo</div>
+                            <div style="font-size: 0.68rem; color: #64748b;">Netflix, Swiggy, Gym, etc.</div>
+                        </div>
+
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem;">
+                            <div style="font-size: 0.7rem; color: #059669; font-weight: 700; text-transform: uppercase;">Annual Leakage</div>
+                            <div style="font-size: 1.15rem; font-weight: 800; color: #059669;" class="num-mono">₹50,856/yr</div>
+                            <div style="font-size: 0.68rem; color: #64748b;">Pruning saves ₹22,000+</div>
+                        </div>
+                    </div>
+
+                    <div style="font-size: 0.78rem; color: #475569; line-height: 1.5;">
+                        Interactive 1-click simulator shows how pruning 2 unused subscriptions unlocks <strong style="color: #15803d;">+₹1,148/month</strong> for automated Nifty 50 compounding.
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <a href="/subscriptions" class="btn btn-lime" style="width: 100%; padding: 0.75rem; font-weight: 700;">
+                    Open Subscription Guard &rarr;
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Four-Step Simplified Roadmap (Clean Light Card) -->
+<div class="card" style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 2.25rem; text-align: left;">
+    <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.35rem;">
+        How Payline Works In 4 Simple Steps
+    </h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        Designed so that anyone can take control of their money in under two minutes.
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
+        <div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.25rem;">
+            <div style="font-size: 0.72rem; font-weight: 700; color: var(--accent-purple); text-transform: uppercase; margin-bottom: 0.35rem;">Step 01</div>
+            <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.35rem; color: var(--text-primary);">Upload Bank File</div>
+            <div style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">Drop your CSV or use our pre-loaded sample. It stays safely on your machine.</div>
+        </div>
+
+        <div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.25rem;">
+            <div style="font-size: 0.72rem; font-weight: 700; color: var(--accent-purple); text-transform: uppercase; margin-bottom: 0.35rem;">Step 02</div>
+            <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.35rem; color: var(--text-primary);">Instant Auto-Sorting</div>
+            <div style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">Every grocery, fuel, and bill payment is automatically organized into neat buckets.</div>
+        </div>
+
+        <div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.25rem;">
+            <div style="font-size: 0.72rem; font-weight: 700; color: var(--accent-purple); text-transform: uppercase; margin-bottom: 0.35rem;">Step 03</div>
+            <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.35rem; color: var(--text-primary);">50/30/20 Family Health</div>
+            <div style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">See your exact needs, wants, and savings percentages, plus overcharge alerts.</div>
+        </div>
+
+        <div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.25rem;">
+            <div style="font-size: 0.72rem; font-weight: 700; color: var(--accent-purple); text-transform: uppercase; margin-bottom: 0.35rem;">Step 04</div>
+            <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.35rem; color: var(--text-primary);">Spare-Change &amp; AI</div>
+            <div style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">Watch small round-ups grow into real gold, and ask Gemini any question 24/7.</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Interactive Script 1: Statement Row Classifier Demo
+function selectTxnRow(idx) {
+    for (let i = 1; i <= 3; i++) {
+        const row = document.getElementById('txn-row-' + i);
+        const tag = document.getElementById('txn-tag-' + i);
+        if (i === idx) {
+            row.style.background = 'rgba(132, 204, 22, 0.12)';
+            row.style.borderColor = '#84cc16';
+            tag.style.color = '#4d7c0f';
+        } else {
+            row.style.background = '#ffffff';
+            row.style.borderColor = '#e2e8f0';
+            tag.style.color = '#64748b';
+        }
+    }
+}
+
+// Interactive Script 2: 50/30/20 Salary Demo
+function setBudgetDemo(salary) {
+    const btn50 = document.getElementById('btn-inc-50');
+    const btn100 = document.getElementById('btn-inc-100');
+    const btn200 = document.getElementById('btn-inc-200');
+
+    btn50.style.background = '#ffffff';
+    btn50.style.color = '#475569';
+    btn50.style.fontWeight = 'normal';
+    btn100.style.background = '#ffffff';
+    btn100.style.color = '#475569';
+    btn100.style.fontWeight = 'normal';
+    btn200.style.background = '#ffffff';
+    btn200.style.color = '#475569';
+    btn200.style.fontWeight = 'normal';
+
+    let activeBtn = btn100;
+    if (salary === 50000) activeBtn = btn50;
+    if (salary === 200000) activeBtn = btn200;
+
+    activeBtn.style.background = 'var(--accent-lime)';
+    activeBtn.style.color = '#090a0f';
+    activeBtn.style.fontWeight = '700';
+
+    const needs = salary * 0.5;
+    const wants = salary * 0.3;
+    const savings = salary * 0.2;
+
+    document.getElementById('disp-needs').innerText = 'INR ' + needs.toLocaleString('en-IN');
+    document.getElementById('disp-wants').innerText = 'INR ' + wants.toLocaleString('en-IN');
+    document.getElementById('disp-savings').innerText = 'INR ' + savings.toLocaleString('en-IN');
+}
+
+// Interactive Script 3: Round-Up Demo
+const roundupDemos = [
+    { name: "Morning Chai & Toast", bill: "INR 132.00", invest: "+INR 18.00" },
+    { name: "Reliance Fresh Rations", bill: "INR 860.00", invest: "+INR 40.00" },
+    { name: "Petrol Refill at IOCL", bill: "INR 475.00", invest: "+INR 25.00" },
+    { name: "Evening Dinner at Dhaba", bill: "INR 310.00", invest: "+INR 40.00" }
+];
+let currentDemoIdx = 0;
+
+function nextRoundupDemo() {
+    currentDemoIdx = (currentDemoIdx + 1) % roundupDemos.length;
+    const item = roundupDemos[currentDemoIdx];
+    document.getElementById('demo-txn-name').innerText = item.name;
+    document.getElementById('demo-txn-bill').innerText = item.bill;
+    document.getElementById('demo-txn-invest').innerText = item.invest;
+}
+
+// Interactive Script 4: AI Question Demo
+const aiResponses = {
+    1: "<strong style='color: #4d7c0f;'>Gemini Advisor:</strong> Yes. Your statement confirms INR 64,467 net monthly surplus after paying rent (INR 60,306) and loans. Allocating INR 25,000 for a holiday leaves a safe 15% reserve cushion.",
+    2: "<strong style='color: #4d7c0f;'>Gemini Advisor:</strong> Food delivery and dining out totaled INR 21,496 (17% of non-debt spend). Preparing just two meals a week at home reclaims approximately INR 4,500 every month.",
+    3: "<strong style='color: #4d7c0f;'>Gemini Advisor:</strong> Your current savings margin is 26.9%. You can comfortably invest INR 7,167 every month (INR 791 round-ups + INR 6,376 automated surplus) without feeling any squeeze on family bills."
+};
+
+function setAiDemo(qIdx) {
+    for (let i = 1; i <= 3; i++) {
+        const btn = document.getElementById('btn-ai-' + i);
+        if (i === qIdx) {
+            btn.style.background = 'var(--accent-lime)';
+            btn.style.color = '#090a0f';
+            btn.style.fontWeight = '700';
+        } else {
+            btn.style.background = '#ffffff';
+            btn.style.color = '#475569';
+            btn.style.fontWeight = 'normal';
+        }
+    }
+    document.getElementById('ai-demo-response').innerHTML = aiResponses[qIdx];
+}
+</script>
+{% endblock %}

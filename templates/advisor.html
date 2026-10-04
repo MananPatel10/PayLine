@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}Payline | Executive Financial Advisor & AI Terminal{% endblock %}
+
+{% block head %}
+<style>
+@keyframes floatIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+}
+@keyframes typing {
+    0%, 60%, 100% { opacity: 1; }
+    30% { opacity: 0; }
+}
+.advisor-white-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: var(--radius-card);
+    padding: 1.75rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+    margin-bottom: 1.5rem;
+    color: #0f172a !important;
+}
+.advisor-white-card .card-header {
+    border-bottom: 1px solid #f1f5f9 !important;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.85rem;
+}
+.advisor-white-card .card-title {
+    color: #0f172a !important;
+}
+.advisor-white-card .card-subtitle {
+    color: #64748b !important;
+}
+.suggestion-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.42rem 0.95rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    font-family: var(--font-display);
+    transition: all 0.2s;
+    letter-spacing: -0.01em;
+    text-align: left;
+}
+.suggestion-chip:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.chat-container {
+    max-height: 520px;
+    min-height: 280px;
+    overflow-y: auto;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    scroll-behavior: smooth;
+}
+.chat-container::-webkit-scrollbar { width: 6px; }
+.chat-container::-webkit-scrollbar-track { background: #f8fafc; }
+.chat-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+.chat-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+.chat-avatar-ai {
+    width: 36px; height: 36px;
+    border-radius: 12px;
+    background: #152228;
+    color: #d4f938;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.72rem;
+    flex-shrink: 0;
+    letter-spacing: -0.02em;
+    font-family: var(--font-display);
+    box-shadow: 0 2px 8px rgba(21, 34, 40, 0.15);
+}
+.chat-avatar-user {
+    width: 36px; height: 36px;
+    border-radius: 12px;
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    color: #2563eb;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.72rem;
+    flex-shrink: 0;
+    font-family: var(--font-display);
+}
+.ai-bubble {
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 4px 16px 16px 16px;
+    padding: 1.15rem 1.35rem;
+    font-size: 0.88rem;
+    color: #1e293b;
+    line-height: 1.65;
+    max-width: 88%;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+.user-bubble {
+    background: #152228;
+    border: 1px solid #1e2d35;
+    border-radius: 16px 4px 16px 16px;
+    padding: 0.95rem 1.25rem;
+    font-size: 0.88rem;
+    color: #ffffff;
+    line-height: 1.55;
+    max-width: 80%;
+    box-shadow: 0 4px 14px rgba(21, 34, 40, 0.12);
+}
+.chat-input-row {
+    display: flex;
+    gap: 0.65rem;
+    align-items: center;
+}
+.chat-input {
+    flex: 1;
+    padding: 0.9rem 1.25rem;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 14px;
+    color: #0f172a !important;
+    font-size: 0.9rem;
+    font-family: var(--font-main);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    letter-spacing: -0.01em;
+}
+.chat-input:focus {
+    border-color: #0f172a !important;
+    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08) !important;
+}
+.chat-input::placeholder { color: #94a3b8; }
+.typing-indicator {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    padding: 0.75rem 1rem;
+}
+.typing-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #0f172a;
+    animation: typing 1.2s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; animation: floatIn 0.4s ease both;">
+    <div>
+        <div class="page-tag">Generative AI Advisory</div>
+        <h1 class="page-title">Executive Financial Intelligence</h1>
+        <p class="page-desc">
+            Institutional CFO dossiers and contextual wealth queries powered by Google Gemini, grounded in your verified statement telemetry.
+        </p>
+    </div>
+    <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <a href="/dashboard" class="btn btn-outline" style="font-size: 0.82rem; padding: 0.5rem 1rem;">Dashboard</a>
+    </div>
+</div>
+
+<!-- AI Chat Terminal (White Card Segment) -->
+<div class="card advisor-white-card">
+    <div class="card-header">
+        <div>
+            <div class="card-title">Interactive Advisory Terminal</div>
+            <div class="card-subtitle">Ask Gemini anything about your cashflow, anomalies, or wealth strategy</div>
+        </div>
+        <span style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; font-weight: 700; color: #15803d; background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25); padding: 0.25rem 0.75rem; border-radius: 9999px; font-family: var(--font-display);">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #16a34a; animation: pulse-dot 2s infinite;"></span>
+            Live Copilot
+        </span>
+    </div>
+
+    <!-- Suggestion Chips -->
+    <div style="margin-bottom: 1.25rem;">
+        <div style="font-size: 0.68rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.65rem; font-family: var(--font-display);">Suggested Inquiries</div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="suggestion-chip" onclick="setPrompt('Analyze my discretionary spending patterns and recommend 3 immediate cutbacks.')">
+                Discretionary Cutbacks
+            </button>
+            <button type="button" class="suggestion-chip" onclick="setPrompt('Evaluate recurring subscriptions and flag redundant monthly overhead.')">
+                Subscription Audit
+            </button>
+            <button type="button" class="suggestion-chip" onclick="setPrompt('How can I optimize my micro-investment allocation between Nifty 50 and Gold?')">
+                Portfolio Optimization
+            </button>
+            <button type="button" class="suggestion-chip" onclick="setPrompt('Is my liquid emergency reserve sufficient based on my average daily burn velocity?')">
+                Liquidity Runway
+            </button>
+            <button type="button" class="suggestion-chip" onclick="setPrompt('What are my top 3 capital leakage points and how can I reduce them?')">
+                Capital Leakage
+            </button>
+        </div>
+    </div>
+
+    <!-- Chat Stream -->
+    <div class="chat-container" id="chat-stream">
+        <!-- Greeting -->
+        <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+            <div class="chat-avatar-ai">AI</div>
+            <div class="ai-bubble">
+                <div style="font-weight: 800; color: #0f172a; font-size: 0.8rem; margin-bottom: 0.45rem; text-transform: uppercase; letter-spacing: 0.04em; font-family: var(--font-display);">Payline Financial Advisor</div>
+                <div style="color: #334155; line-height: 1.6;">Statement telemetry active | <span class="num-mono" style="color: #0f172a; font-weight: 700;">&#8377;{{ "{:,.2f}".format(analysis.income_vs_expense.total_income) }}</span> income, <span class="num-mono" style="color: #0f172a; font-weight: 700;">&#8377;{{ "{:,.2f}".format(analysis.income_vs_expense.total_expense) }}</span> outflow. Enter any inquiry about cashflow variance, debt amortization, tax optimization, or micro-wealth deployment.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Form -->
+    <form id="advisor-query-form" onsubmit="submitQuery(event)">
+        <div class="chat-input-row">
+            <input type="text" id="user-query" class="chat-input" placeholder="Ask Gemini about your spending, anomalies, or wealth roadmap..." required>
+            <button type="submit" id="submit-btn" class="btn btn-lime" style="padding: 0.9rem 1.6rem; font-weight: 800; border-radius: 14px; flex-shrink: 0; letter-spacing: -0.02em;">
+                Send
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function setPrompt(text) {
+    const input = document.getElementById('user-query');
+    input.value = text;
+    input.focus();
+}
+
+function parseMarkdownToHtml(md) {
+    if (!md) return '';
+    let html = md.trim();
+    const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;'};
+    html = html.replace(/[&<>]/g, m => map[m]);
+    html = html.replace(/^#### (.*$)/gim, '<div style="margin-top: 0.85rem; margin-bottom: 0.4rem; font-size: 0.95rem; font-weight: 700; color: #1e293b;">$1</div>');
+    html = html.replace(/^### (.*$)/gim, '<div style="margin-top: 1rem; margin-bottom: 0.5rem; font-size: 1.05rem; font-weight: 800; color: #0f172a;">$1</div>');
+    html = html.replace(/^## (.*$)/gim, '<div style="margin-top: 1.25rem; margin-bottom: 0.5rem; font-size: 1.15rem; font-weight: 800; color: #0f172a;">$1</div>');
+    html = html.replace(/^# (.*$)/gim, '<div style="margin-top: 1.5rem; margin-bottom: 0.75rem; font-size: 1.25rem; font-weight: 900; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.35rem;">$1</div>');
+    html = html.replace(/^---+$|^\*\*\*+$/gim, '<hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 1.25rem 0;">');
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #0f172a; font-weight: 700;">$1</strong>');
+    html = html.replace(/\*(.*?)\*/g, '<em style="color: #475569;">$1</em>');
+    html = html.replace(/^\s*[-*]\s+(.*$)/gim, '<div style="display: flex; gap: 0.6rem; align-items: baseline; margin-bottom: 0.4rem;"><span style="color: #65a30d; font-size: 0.75rem;">-</span><span style="color: #334155; line-height: 1.55;">$1</span></div>');
+    html = html.replace(/^\s*(\d+)\.\s+(.*$)/gim, '<div style="display: flex; gap: 0.6rem; align-items: baseline; margin-bottom: 0.45rem;"><span style="color: #6366f1; font-weight: 700; font-size: 0.85rem;" class="num-mono">$1.</span><span style="color: #334155; line-height: 1.55;">$2</span></div>');
+    html = html.replace(/`([^`]+)`/g, '<code style="background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.82rem; color: #0f172a; border: 1px solid #e2e8f0;">$1</code>');
+    html = html.replace(/\n\n+/g, '<div style="height: 0.5rem;"></div>');
+    html = html.replace(/\n/g, '<br>');
+    return html;
+}
+
+function escapeHtml(text) {
+    const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+async function submitQuery(e) {
+    e.preventDefault();
+    const queryInput = document.getElementById('user-query');
+    const query = queryInput.value.trim();
+    if (!query) return;
+
+    const chatStream = document.getElementById('chat-stream');
+    const submitBtn = document.getElementById('submit-btn');
+
+    // User message
+    const userMsg = document.createElement('div');
+    userMsg.style.cssText = 'display: flex; gap: 0.75rem; align-items: flex-start; flex-direction: row-reverse;';
+    userMsg.innerHTML = `
+        <div class="chat-avatar-user">You</div>
+        <div class="user-bubble">${escapeHtml(query)}</div>
+    `;
+    chatStream.appendChild(userMsg);
+
+    // Typing indicator
+    const loadingMsg = document.createElement('div');
+    loadingMsg.style.cssText = 'display: flex; gap: 0.75rem; align-items: flex-start;';
+    loadingMsg.innerHTML = `
+        <div class="chat-avatar-ai">AI</div>
+        <div class="ai-bubble" style="padding: 0.75rem 1rem;">
+            <div class="typing-indicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+    `;
+    chatStream.appendChild(loadingMsg);
+    chatStream.scrollTop = chatStream.scrollHeight;
+
+    queryInput.value = '';
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.5';
+
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({query: query})
+        });
+        const data = await response.json();
+        const responseHtml = parseMarkdownToHtml(data.response || 'No response returned from the model.');
+
+        loadingMsg.innerHTML = `
+            <div class="chat-avatar-ai">AI</div>
+            <div class="ai-bubble">
+                <div style="font-weight: 800; color: #0f172a; font-size: 0.8rem; margin-bottom: 0.45rem; text-transform: uppercase; letter-spacing: 0.04em; font-family: var(--font-display);">Payline Advisor</div>
+                <div style="color: #334155; line-height: 1.6;">${responseHtml}</div>
+            </div>
+        `;
+    } catch (err) {
+        loadingMsg.innerHTML = `
+            <div class="chat-avatar-ai" style="background: #ef4444; color: #ffffff;">!</div>
+            <div class="ai-bubble" style="border-color: rgba(239,68,68,0.25); background: #fef2f2;">
+                <strong style="color: #ef4444;">Connection Error:</strong> <span style="color: #991b1b;">Unable to reach Gemini. Check network connectivity.</span>
+            </div>
+        `;
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        chatStream.scrollTop = chatStream.scrollHeight;
+    }
+}
+</script>
+{% endblock %}

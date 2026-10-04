@@ -1,0 +1,103 @@
+# ==============================================================================
+# SECRETS, API KEYS & ENVIRONMENT CONFIGURATION (STRICT: NEVER COMMIT)
+# ==============================================================================
+.env
+.env.*
+*.env
+!.env.example
+secrets/
+*.pem
+*.key
+*.crt
+credentials.json
+client_secret*.json
+
+# ==============================================================================
+# LOCAL DATABASES & PERSISTENT USER DATA
+# ==============================================================================
+*.db
+*.sqlite
+*.sqlite3
+payline.db
+payline.db-journal
+payline.db-wal
+payline.db-shm
+
+# User uploaded statements & sensitive test banking exports
+uploads/*
+!uploads/.gitkeep
+*.csv
+!sample_statement.csv
+*.xlsx
+*.xls
+*.pdf
+
+# ==============================================================================
+# PYTHON ENVIRONMENTS & COMPILED ARTIFACTS
+# ==============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ==============================================================================
+# LOGS, TEMPORARY FILES & TESTING
+# ==============================================================================
+*.log
+*.tmp
+*.bak
+*.swp
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.system_generated/
+
+# ==============================================================================
+# OPERATING SYSTEM & IDE ARTIFACTS
+# ==============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+$RECYCLE.BIN/
+
+# IDEs & Editors
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace

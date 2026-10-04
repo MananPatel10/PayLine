@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account | Payline Financial Intelligence{% endblock %}
+
+{% block head %}
+<style>
+@keyframes floatIn {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.auth-card {
+    animation: floatIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.auth-input {
+    width: 100%;
+    padding: 0.82rem 1.1rem;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    color: #0f172a;
+    font-size: 0.92rem;
+    font-family: var(--font-main);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    letter-spacing: -0.01em;
+}
+.auth-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+.auth-input::placeholder { color: #94a3b8; }
+.auth-label {
+    display: block;
+    font-size: 0.73rem;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 0.45rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-family: var(--font-display);
+}
+.feature-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.73rem;
+    color: #475569;
+    font-weight: 600;
+}
+.feature-pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    flex-shrink: 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 420px; margin: 1.5rem auto 4rem;">
+    <div class="auth-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 28px; padding: 2.75rem 2.25rem; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.05); color: #0f172a;">
+
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 2.25rem;">
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(132,204,22,0.15); border: 1px solid #84cc16; padding: 0.28rem 0.85rem; border-radius: 9999px; font-size: 0.68rem; font-weight: 800; color: #4d7c0f; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; font-family: var(--font-display);">
+                <span style="width: 5px; height: 5px; border-radius: 50%; background: #4d7c0f; display: inline-block;"></span>
+                Free Registration
+            </div>
+            <h1 style="font-size: 1.85rem; font-weight: 800; letter-spacing: -0.04em; color: #0f172a; margin-bottom: 0.5rem; font-family: var(--font-display); line-height: 1.1;">
+                Create Free Account
+            </h1>
+            <p style="font-size: 0.85rem; color: #64748b; letter-spacing: -0.01em; line-height: 1.5;">
+                Deploy institutional wealth intelligence on your statements
+            </p>
+        </div>
+
+        <form action="/signup" method="POST">
+            <div style="margin-bottom: 1.1rem;">
+                <label for="name" class="auth-label">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="William Grace" required class="auth-input">
+            </div>
+
+            <div style="margin-bottom: 1.1rem;">
+                <label for="email" class="auth-label">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="name@company.com" required class="auth-input">
+            </div>
+
+            <div style="margin-bottom: 1.75rem;">
+                <label for="password" class="auth-label">Password <span style="color: #94a3b8; font-weight: 500;">(Min. 6 characters)</span></label>
+                <input type="password" id="password" name="password" placeholder="Password" required minlength="6" class="auth-input">
+            </div>
+
+            <button type="submit" class="btn btn-lime" style="width: 100%; padding: 0.82rem; font-size: 0.92rem; font-weight: 800; margin-bottom: 1.25rem; letter-spacing: -0.02em; border-radius: 12px;">
+                Create Account
+            </button>
+        </form>
+
+        <!-- Privacy Notice -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+            <div class="feature-pill"><span class="feature-pill-dot"></span> On-device ML processing | zero cloud data transfer</div>
+            <div class="feature-pill"><span class="feature-pill-dot"></span> Passwords hashed with bcrypt | never stored plain</div>
+            <div class="feature-pill"><span class="feature-pill-dot"></span> SQLite local vault | no third-party tracking</div>
+        </div>
+
+        <div style="text-align: center; font-size: 0.82rem; color: #64748b;">
+            Already have an account?
+            <a href="/login" style="color: #4f46e5; font-weight: 700; text-decoration: none; margin-left: 0.25rem; letter-spacing: -0.01em;">Sign In</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

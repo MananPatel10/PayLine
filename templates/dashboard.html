@@ -1,0 +1,787 @@
+{% extends "base.html" %}
+
+{% block title %}Payline — Financial Health & Analytics Dashboard{% endblock %}
+
+{% block head %}
+<style>
+/* ─── Dashboard Modern UI Styles (Matching Reference Design) ───────────────── */
+.dash-grid-top {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+@media (max-width: 1024px) {
+    .dash-grid-top { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+    .dash-grid-top { grid-template-columns: 1fr; }
+}
+
+.kpi-modern-card {
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: var(--radius-card);
+    padding: 1.4rem 1.4rem 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+.kpi-modern-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+}
+
+.kpi-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.6rem;
+}
+.kpi-title-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 0.2rem;
+}
+.kpi-big-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+}
+
+/* Mini Bar Chart in KPI cards (as seen in reference image) */
+.mini-bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 44px;
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    position: relative;
+}
+.mini-bar {
+    flex: 1;
+    background: #e2e8f0;
+    border-radius: 4px;
+    transition: height 0.5s ease, background-color 0.2s;
+    position: relative;
+}
+.mini-bar.active {
+    background: #152228;
+}
+.mini-bar-tooltip {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #152228;
+    color: #ffffff;
+    font-size: 0.62rem;
+    font-weight: 800;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-family: var(--font-mono);
+}
+.mini-bar-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 3px 3px 0;
+    border-style: solid;
+    border-color: #152228 transparent;
+    display: block;
+    width: 0;
+}
+
+/* Realistic Physical Debit Card from Reference UI */
+.physical-debit-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 45%, #eef2f6 100%);
+    border: 1px solid #cbd5e1;
+    border-radius: var(--radius-inner);
+    padding: 1.2rem 1.35rem 1rem;
+    color: #0f172a;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.physical-debit-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.09);
+}
+
+/* Quick Action Buttons underneath Virtual Card */
+.quick-actions-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+    margin-top: 0.75rem;
+}
+.action-btn-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform var(--transition-base);
+}
+.action-btn-item:hover { transform: translateY(-2px); }
+.action-btn-item span {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #475569;
+}
+
+/* 2-Column Section Layouts */
+.dash-two-col {
+    display: grid;
+    grid-template-columns: 1.8fr 1.2fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+@media (max-width: 900px) {
+    .dash-two-col { grid-template-columns: 1fr; }
+}
+
+/* Saving item row with progress */
+.saving-item-card {
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 16px;
+    padding: 0.9rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.saving-item-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+.saving-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.saving-item-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.saving-item-title {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #0f172a;
+}
+.saving-item-sub {
+    font-size: 0.72rem;
+    color: #64748b;
+}
+.saving-item-amt {
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: #0f172a;
+    font-family: var(--font-mono);
+}
+
+.sleek-progress-track {
+    background: #edf2f7;
+    height: 6px;
+    border-radius: 9999px;
+    overflow: hidden;
+    width: 100%;
+}
+.sleek-progress-fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 1s ease-in-out;
+}
+
+/* Activity item in Recent Activity */
+.activity-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0.25rem;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background-color 0.15s;
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-item:hover { background-color: #f8fafc; border-radius: 8px; }
+.activity-item-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.activity-name {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #0f172a;
+}
+.activity-meta {
+    font-size: 0.7rem;
+    color: #94a3b8;
+}
+.activity-right {
+    text-align: right;
+}
+.activity-amount {
+    font-weight: 800;
+    font-size: 0.88rem;
+    font-family: var(--font-mono);
+}
+.activity-date {
+    font-size: 0.68rem;
+    color: #94a3b8;
+}
+
+/* Money Flow Spline Chart SVG */
+.spline-chart-wrap {
+    width: 100%;
+    height: 220px;
+    position: relative;
+    margin: 1rem 0;
+}
+.spline-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.75rem;">
+    <div>
+        <div class="page-tag" style="color: #6366f1; font-weight: 800; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.08em; margin-bottom: 0.25rem;">
+            Dashboard | Financial Intelligence
+        </div>
+        <h1 class="page-title" style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.04em; color: #0f172a; margin-bottom: 0.35rem;">
+            Dashboard
+        </h1>
+        <p class="page-desc" style="font-size: 0.9rem; color: #64748b; line-height: 1.5;">
+            Aggregated statement telemetry, 50/30/20 budget adherence, and two-sigma statistical anomaly flags.
+        </p>
+    </div>
+    <div style="display: flex; gap: 0.65rem; align-items: center; flex-wrap: wrap;">
+        <span class="dropdown-pill">
+            <span>Jan 10 - Present</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </span>
+        <a href="/invest" class="btn btn-outline" style="font-size: 0.82rem; padding: 0.5rem 1.1rem;">
+            Micro-Investing
+        </a>
+        <a href="/advisor" class="btn btn-lime" style="font-size: 0.82rem; padding: 0.5rem 1.1rem; background: #d4f938; color: #0f172a; font-weight: 800;">
+            AI Advisor
+        </a>
+    </div>
+</div>
+
+<!-- TOP ROW: 4 EXECUTIVE KPI CARDS (Matching Reference Header Row) -->
+<div class="dash-grid-top">
+    <!-- Card 1: Total Cash Inflow (like "Business account") -->
+    <div class="kpi-modern-card">
+        <div>
+            <div class="kpi-top-row">
+                <div>
+                    <div class="kpi-title-label">Business Account Inflow</div>
+                    <div class="kpi-big-value num-mono">
+                        ₹{{ "{:,.2f}".format(analysis.income_vs_expense.total_income) }}
+                    </div>
+                </div>
+                <div class="icon-box icon-box-blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+            </div>
+            <div style="font-size: 0.72rem; color: #059669; font-weight: 700; display: flex; align-items: center; gap: 0.25rem;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+                Verified Credits | Recurring Salary
+            </div>
+        </div>
+
+        <!-- Mini Bar Chart underneath (exact match to image) -->
+        <div class="mini-bar-chart">
+            <div class="mini-bar" style="height: 38%;"></div>
+            <div class="mini-bar" style="height: 52%;"></div>
+            <div class="mini-bar active" style="height: 88%;">
+                <div class="mini-bar-tooltip">₹{{ "{:,.0f}".format(analysis.avg_daily_spend * 7) }}</div>
+            </div>
+            <div class="mini-bar" style="height: 60%;"></div>
+            <div class="mini-bar" style="height: 45%;"></div>
+        </div>
+    </div>
+
+    <!-- Card 2: Total Cash Outflow (like "Tax Reserve") -->
+    <div class="kpi-modern-card">
+        <div>
+            <div class="kpi-top-row">
+                <div>
+                    <div class="kpi-title-label">Total Cash Outflow</div>
+                    <div class="kpi-big-value num-mono">
+                        ₹{{ "{:,.2f}".format(analysis.income_vs_expense.total_expense) }}
+                    </div>
+                </div>
+                <div class="icon-box icon-box-purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+            </div>
+            <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">
+                Debits across all verified categories
+            </div>
+        </div>
+
+        <!-- Mini Bar Chart -->
+        <div class="mini-bar-chart">
+            <div class="mini-bar" style="height: 48%;"></div>
+            <div class="mini-bar" style="height: 72%;"></div>
+            <div class="mini-bar" style="height: 55%;"></div>
+            <div class="mini-bar" style="height: 68%;"></div>
+            <div class="mini-bar" style="height: 40%;"></div>
+        </div>
+    </div>
+
+    <!-- Card 3: Net Savings Rate (like "Savings") -->
+    <div class="kpi-modern-card">
+        <div>
+            <div class="kpi-top-row">
+                <div>
+                    <div class="kpi-title-label">Net Savings Retention</div>
+                    <div class="kpi-big-value num-mono" style="color: {% if analysis.savings_rate >= 20 %}#059669{% else %}#d97706{% endif %};">
+                        {{ "{:.1f}".format(analysis.savings_rate) }}%
+                    </div>
+                </div>
+                <div class="icon-box icon-box-green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                </div>
+            </div>
+            <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">
+                Institutional Target: min 20.0% adherence
+            </div>
+        </div>
+
+        <!-- Mini Bar Chart -->
+        <div class="mini-bar-chart">
+            <div class="mini-bar" style="height: 30%;"></div>
+            <div class="mini-bar" style="height: 42%;"></div>
+            <div class="mini-bar" style="height: 65%;"></div>
+            <div class="mini-bar active" style="height: 82%;"></div>
+            <div class="mini-bar" style="height: 58%;"></div>
+        </div>
+    </div>
+
+    <!-- Card 4: Realistic Physical Debit Card from Reference Screenshot & Quick Actions -->
+    <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+        <div class="physical-debit-card" style="min-height: 175px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <!-- Silver Metallic EMV Chip -->
+                <svg width="34" height="26" viewBox="0 0 34 26" fill="none">
+                    <rect width="34" height="26" rx="5" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.2"/>
+                    <path d="M0 9h11 M0 17h11 M23 9h11 M23 17h11 M11 5v16 M23 5v16" stroke="#94a3b8" stroke-width="1.2"/>
+                </svg>
+                <!-- Mastercard Interlocking Circles Logo -->
+                <svg width="36" height="22" viewBox="0 0 36 22" fill="none">
+                    <circle cx="12" cy="11" r="11" fill="#eb001b"/>
+                    <circle cx="24" cy="11" r="11" fill="#f79e1b" fill-opacity="0.9"/>
+                </svg>
+            </div>
+
+            <div style="margin-top: 0.8rem; margin-bottom: 0.75rem;">
+                <div style="font-size: 0.68rem; color: #64748b; font-weight: 600; letter-spacing: 0.02em; margin-bottom: 0.2rem;">Card Number</div>
+                <div class="num-mono" style="font-size: 1.15rem; font-weight: 700; color: #0f172a; letter-spacing: 0.1em;">8923 2461 5320 7642</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr 0.8fr; gap: 0.5rem; align-items: flex-end;">
+                <div>
+                    <div style="font-size: 0.62rem; color: #64748b; font-weight: 600; margin-bottom: 0.15rem;">Name</div>
+                    <div style="font-size: 0.82rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ current_user.name if current_user else "Dean Ambrose" }}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.62rem; color: #64748b; font-weight: 600; margin-bottom: 0.15rem;">Exp. Date</div>
+                    <div class="num-mono" style="font-size: 0.82rem; font-weight: 700; color: #0f172a;">07/28</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.62rem; color: #64748b; font-weight: 600; margin-bottom: 0.15rem;">CVV</div>
+                    <div class="num-mono" style="font-size: 0.82rem; font-weight: 700; color: #0f172a;">923</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attached Daily Burn Strip -->
+        <div style="background: #ffffff; border: 1px solid #edf2f7; border-radius: 12px; padding: 0.5rem 0.85rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
+            <span style="font-size: 0.68rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Daily Burn Velocity</span>
+            <span class="num-mono" style="font-size: 0.88rem; font-weight: 800; color: #0f172a;">&#8377;{{ "{:,.2f}".format(analysis.avg_daily_spend) }}</span>
+        </div>
+
+        <!-- 4 Quick Actions (matching Send, Receive, Invoicing, More) -->
+        <div class="quick-actions-row">
+            <a href="/invest" class="action-btn-item">
+                <div class="icon-box icon-box-purple" style="width: 32px; height: 32px; border-radius: 10px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                </div>
+                <span>Invest</span>
+            </a>
+            <a href="/subscriptions" class="action-btn-item">
+                <div class="icon-box icon-box-green" style="width: 32px; height: 32px; border-radius: 10px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <span>Guard</span>
+            </a>
+            <a href="/tax" class="action-btn-item">
+                <div class="icon-box icon-box-amber" style="width: 32px; height: 32px; border-radius: 10px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <span>Tax</span>
+            </a>
+            <a href="/advisor" class="action-btn-item">
+                <div class="icon-box icon-box-blue" style="width: 32px; height: 32px; border-radius: 10px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <span>Advisor</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- MIDDLE ROW: MONEY FLOW SPLINE CHART & STATISTICS DONUT (Exact match to Reference) -->
+<div class="dash-two-col">
+    <!-- LEFT: Money Flow (Smooth Organic Spline Chart) -->
+    <div class="card" style="margin-bottom: 0;">
+        <div class="card-header" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+            <div>
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">Money Flow</h3>
+                <div style="font-size: 0.78rem; color: #64748b;">Outflow velocity &amp; spending momentum across cycles</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; font-weight: 700; color: #152228;">
+                    <span style="width: 14px; height: 3px; background: #152228; border-radius: 2px;"></span>
+                    <span>Expenses</span>
+                </div>
+                <span class="dropdown-pill">
+                    <span>Jan 10 - Jan 16</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                </span>
+            </div>
+        </div>
+
+        <!-- The Spline Wave Chart (Visualized with SVG matching screenshot) -->
+        <div class="spline-chart-wrap">
+            <svg class="spline-svg" viewBox="0 0 680 180" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="splineGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#152228" stop-opacity="0.08"/>
+                        <stop offset="100%" stop-color="#152228" stop-opacity="0.00"/>
+                    </linearGradient>
+                </defs>
+
+                <!-- Grid Guide Lines -->
+                <line x1="40" y1="20" x2="660" y2="20" stroke="#f1f5f9" stroke-width="1"/>
+                <line x1="40" y1="65" x2="660" y2="65" stroke="#f1f5f9" stroke-width="1"/>
+                <line x1="40" y1="110" x2="660" y2="110" stroke="#f1f5f9" stroke-width="1"/>
+                <line x1="40" y1="155" x2="660" y2="155" stroke="#f1f5f9" stroke-width="1"/>
+
+                <!-- Y-Axis Values -->
+                <text x="10" y="24" fill="#94a3b8" font-size="10" font-family="'JetBrains Mono', monospace">500</text>
+                <text x="10" y="69" fill="#94a3b8" font-size="10" font-family="'JetBrains Mono', monospace">100</text>
+                <text x="10" y="114" fill="#94a3b8" font-size="10" font-family="'JetBrains Mono', monospace">50</text>
+                <text x="18" y="159" fill="#94a3b8" font-size="10" font-family="'JetBrains Mono', monospace">0</text>
+
+                <!-- Gradient Fill Under Curve -->
+                <path d="M 60 145 C 120 142, 140 120, 160 85 C 180 50, 190 60, 210 115 C 230 160, 260 90, 290 65 C 320 40, 340 110, 360 80 C 380 50, 410 25, 440 22 C 470 20, 490 40, 520 28 C 550 18, 580 45, 640 40 L 640 155 L 60 155 Z" fill="url(#splineGradient)"/>
+
+                <!-- Smooth Wave Line Curve -->
+                <path d="M 60 145 C 120 142, 140 120, 160 85 C 180 50, 190 60, 210 115 C 230 160, 260 90, 290 65 C 320 40, 340 110, 360 80 C 380 50, 410 25, 440 22 C 470 20, 490 40, 520 28 C 550 18, 580 45, 640 40" fill="none" stroke="#152228" stroke-width="3.5" stroke-linecap="round"/>
+
+                <!-- Neon Lime Highlight Point & Tooltip (matching $409 in reference!) -->
+                <circle cx="520" cy="28" r="5" fill="#d4f938" stroke="#152228" stroke-width="2.5"/>
+            </svg>
+
+            <!-- Floating Neon Lime Tooltip Pill -->
+            <div style="position: absolute; top: 12px; left: 74%; transform: translateX(-50%); background: #d4f938; color: #0f172a; padding: 0.15rem 0.55rem; border-radius: 6px; font-weight: 800; font-size: 0.72rem; box-shadow: 0 2px 8px rgba(212,249,56,0.4); font-family: var(--font-mono);">
+                ₹{{ "{:,.0f}".format(analysis.avg_daily_spend) }}
+            </div>
+        </div>
+
+        <!-- Timeframe Selector Pills (1D, 5D, 1M, 3M, 6M, 1Y) -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.5rem; border-top: 1px solid #f1f5f9;">
+            <div class="timeframe-group">
+                <button type="button" class="timeframe-btn" onclick="setTimeframe(this)">1D</button>
+                <button type="button" class="timeframe-btn active" onclick="setTimeframe(this)">5D</button>
+                <button type="button" class="timeframe-btn" onclick="setTimeframe(this)">1M</button>
+                <button type="button" class="timeframe-btn" onclick="setTimeframe(this)">3M</button>
+                <button type="button" class="timeframe-btn" onclick="setTimeframe(this)">6M</button>
+                <button type="button" class="timeframe-btn" onclick="setTimeframe(this)">1Y</button>
+            </div>
+            <div style="font-size: 0.72rem; color: #94a3b8; font-family: var(--font-mono);">
+                {{ analysis.monthly_totals|length }} Cycles Monitored
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: Statistics (Thick Segmented Donut Chart & Legend) -->
+    <div class="card" style="margin-bottom: 0;">
+        <div class="card-header" style="border-bottom: none; margin-bottom: 0.5rem;">
+            <div>
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">Statistics</h3>
+                <div style="font-size: 0.78rem; color: #64748b;">AI Categorized Spending Split</div>
+            </div>
+            <a href="#ledger-section" class="dropdown-pill">
+                <span>View all</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+            <!-- Segmented Donut SVG -->
+            <div style="position: relative; width: 140px; height: 140px; flex-shrink: 0; margin: auto;">
+                <svg viewBox="0 0 42 42" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                    <!-- Background Track -->
+                    <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#f1f5f9" stroke-width="7"/>
+                    <!-- Dark Slate Segment (Home / Living) -->
+                    <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#152228" stroke-width="7" stroke-dasharray="45 55" stroke-dashoffset="0"/>
+                    <!-- Neon Lime Segment (Shopping / Dining) -->
+                    <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#d4f938" stroke-width="7" stroke-dasharray="30 70" stroke-dashoffset="-45"/>
+                    <!-- Lavender/Purple Segment (Others) -->
+                    <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#8b5cf6" stroke-width="7" stroke-dasharray="15 85" stroke-dashoffset="-75"/>
+                    <!-- Soft Mint Segment (Transport/Health) -->
+                    <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#10b981" stroke-width="7" stroke-dasharray="10 90" stroke-dashoffset="-90"/>
+                </svg>
+            </div>
+
+            <!-- Legend List (Exact match to reference layout) -->
+            <div style="flex: 1; min-width: 160px; display: flex; flex-direction: column; gap: 0.75rem;">
+                {% for item in category_breakdown[:4] %}
+                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: {% if loop.index == 1 %}#152228{% elif loop.index == 2 %}#d4f938{% elif loop.index == 3 %}#8b5cf6{% else %}#10b981{% endif %}; flex-shrink: 0;"></div>
+                    <div>
+                        <div style="font-weight: 800; font-size: 0.88rem; color: #0f172a;" class="num-mono">
+                            ₹{{ "{:,.2f}".format(item.amount) }}
+                        </div>
+                        <div style="font-size: 0.72rem; color: #64748b;">
+                            {{ item.category }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- LOWER ROW: SAVING (50/30/20 COMPLIANCE) & RECENT ACTIVITY (Exact match to Reference) -->
+<div class="dash-two-col" style="margin-top: 1.5rem;">
+    <!-- LEFT: Saving (50/30/20 Rule Audit Cards) -->
+    <div class="card" style="margin-bottom: 0;">
+        <div class="card-header" style="border-bottom: none; margin-bottom: 0.75rem;">
+            <div>
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">Saving</h3>
+                <div style="font-size: 0.78rem; color: #64748b;">50/30/20 Institutional Allocation Compliance</div>
+            </div>
+            <span class="dropdown-pill">
+                <span>This month</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+        </div>
+
+        <!-- Item 1: Essential Needs (like Mutual funds in screenshot) -->
+        <div class="saving-item-card">
+            <div class="saving-item-top">
+                <div class="saving-item-left">
+                    <div class="icon-box icon-box-purple">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                    </div>
+                    <div>
+                        <div class="saving-item-title">Essential Needs</div>
+                        <div class="saving-item-sub">Rent, Utilities, Groceries | Target: 50%</div>
+                    </div>
+                </div>
+                <div class="saving-item-amt">
+                    ₹{{ "{:,.2f}".format(b_metrics.needs_spend) }}
+                </div>
+            </div>
+            <div class="sleek-progress-track">
+                <div class="sleek-progress-fill" style="background: {% if b_metrics.needs_pct <= 50 %}#152228{% else %}#f59e0b{% endif %}; width: {{ [b_metrics.needs_pct, 100]|min }}%;"></div>
+            </div>
+        </div>
+
+        <!-- Item 2: Discretionary Wants (like Investment in screenshot) -->
+        <div class="saving-item-card">
+            <div class="saving-item-top">
+                <div class="saving-item-left">
+                    <div class="icon-box icon-box-amber">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    </div>
+                    <div>
+                        <div class="saving-item-title">Discretionary Wants</div>
+                        <div class="saving-item-sub">Dining, Shopping, Entertainment | Target: 30%</div>
+                    </div>
+                </div>
+                <div class="saving-item-amt">
+                    ₹{{ "{:,.2f}".format(b_metrics.wants_spend) }}
+                </div>
+            </div>
+            <div class="sleek-progress-track">
+                <div class="sleek-progress-fill" style="background: {% if b_metrics.wants_pct <= 30 %}#10b981{% else %}#f59e0b{% endif %}; width: {{ [b_metrics.wants_pct, 100]|min }}%;"></div>
+            </div>
+        </div>
+
+        <!-- Item 3: Net Wealth Retention (Investible Surplus) -->
+        <div class="saving-item-card">
+            <div class="saving-item-top">
+                <div class="saving-item-left">
+                    <div class="icon-box icon-box-green">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                    </div>
+                    <div>
+                        <div class="saving-item-title">Net Wealth Retention</div>
+                        <div class="saving-item-sub">Surplus for Micro-Investing | Target: 20%</div>
+                    </div>
+                </div>
+                <div class="saving-item-amt" style="color: #059669;">
+                    {{ b_metrics.savings_pct }}%
+                </div>
+            </div>
+            <div class="sleek-progress-track">
+                <div class="sleek-progress-fill" style="background: #10b981; width: {{ [b_metrics.savings_pct, 100]|min }}%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: Recent Activity (Transaction Ledger Preview, matching Reference) -->
+    <div class="card" id="ledger-section" style="margin-bottom: 0;">
+        <div class="card-header" style="border-bottom: none; margin-bottom: 0.5rem;">
+            <div>
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">Recent Activity</h3>
+                <div style="font-size: 0.78rem; color: #64748b;">Normalized banking transaction stream</div>
+            </div>
+            <div style="display: flex; gap: 0.4rem; align-items: center;">
+                <input type="text" id="txn-search" placeholder="Search..." onkeyup="filterLedger()" class="ledger-search-input" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; border-radius: 9999px; width: 110px;">
+                <select id="type-filter" onchange="filterLedger()" class="ledger-search-input" style="padding: 0.35rem 0.65rem; font-size: 0.75rem; border-radius: 9999px;">
+                    <option value="ALL">All</option>
+                    <option value="Debit">Debits</option>
+                    <option value="Credit">Credits</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="max-height: 380px; overflow-y: auto; padding-right: 0.25rem;">
+            {% for t in transactions[:12] %}
+            <div class="activity-item ledger-row" data-desc="{{ t.Description|lower }}" data-type="{{ t.Type }}">
+                <div class="activity-item-left">
+                    <!-- Category pastel icon badge -->
+                    <div class="icon-box {% if 'salary' in t.Description|lower or t.Type == 'Credit' %}icon-box-green{% elif 'food' in t.Category|lower or 'swiggy' in t.Description|lower or 'zomato' in t.Description|lower %}icon-box-pink{% elif 'travel' in t.Category|lower or 'uber' in t.Description|lower or 'ola' in t.Description|lower %}icon-box-amber{% elif 'entertainment' in t.Category|lower or 'netflix' in t.Description|lower or 'prime' in t.Description|lower %}icon-box-purple{% elif 'health' in t.Category|lower or 'pharmacy' in t.Description|lower %}icon-box-green{% else %}icon-box-blue{% endif %}">
+                        {% if t.Type == 'Credit' %}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        {% elif 'food' in t.Category|lower or 'swiggy' in t.Description|lower %}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+                        {% elif 'travel' in t.Category|lower or 'uber' in t.Description|lower %}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        {% else %}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div class="activity-name">{{ t.Description }}</div>
+                        <div class="activity-meta">{{ t.Category }} | {{ t.Type }}</div>
+                    </div>
+                </div>
+                <div class="activity-right">
+                    <div class="activity-amount" style="color: {% if t.Type == 'Credit' %}#059669{% else %}#0f172a{% endif %};">
+                        {% if t.Type == 'Credit' %}+{% else %}-{% endif %}₹{{ "{:,.2f}".format(t.Amount) }}
+                    </div>
+                    <div class="activity-date">{{ t.date_str }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- STATISTICAL ANOMALY & OUTLIER AUDIT (Clean Minimalist Warning Card) -->
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">Statistical Anomaly &amp; Outlier Audit</h3>
+            <div style="font-size: 0.78rem; color: #64748b;">Modified Z-Score (MAD), Multivariate Isolation Forest, or duplicate billing drift</div>
+        </div>
+        <span class="badge badge-warning">{{ anomalies|length }} Flagged</span>
+    </div>
+
+    {% if anomalies %}
+    <div style="overflow-x: auto;">
+        <table class="clean-table">
+            <thead>
+                <tr>
+                    <th style="width: 110px;">Date</th>
+                    <th>Counterparty</th>
+                    <th style="width: 180px;">Detection Engine</th>
+                    <th>Audit Finding</th>
+                    <th style="text-align: right; width: 130px;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in anomalies %}
+                <tr class="anomaly-row">
+                    <td class="num-mono" style="font-size: 0.78rem; color: #64748b;">{{ a.Date }}</td>
+                    <td style="font-weight: 700; color: #0f172a;">{{ a.Description }}</td>
+                    <td>
+                        <span class="badge badge-purple">{{ a.Type }}</span>
+                    </td>
+                    <td style="font-size: 0.82rem; color: #475569; line-height: 1.45;">{{ a.Reason }}</td>
+                    <td style="text-align: right; font-weight: 800; color: #dc2626;" class="num-mono">₹{{ "{:,.2f}".format(a.Amount) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 2.5rem; color: #64748b; font-size: 0.88rem;">
+        No statistical anomalies detected in this statement dataset.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterLedger() {
+    const search = document.getElementById('txn-search').value.toLowerCase();
+    const typeFilter = document.getElementById('type-filter').value;
+    const rows = document.querySelectorAll('.ledger-row');
+
+    rows.forEach(row => {
+        const desc = row.getAttribute('data-desc') || '';
+        const type = row.getAttribute('data-type') || '';
+        const matchesSearch = desc.includes(search);
+        const matchesType = (typeFilter === 'ALL' || type === typeFilter);
+
+        if (matchesSearch && matchesType) {
+            row.style.display = 'flex';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function setTimeframe(btn) {
+    document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+</script>
+{% endblock %}
